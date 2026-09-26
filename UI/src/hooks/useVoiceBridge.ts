@@ -239,16 +239,47 @@ function initWebSocket() {
         } else if (eventType === 'transcript' || eventType === 'ai_response') {
           const text = data.text || data.transcript;
           if (text) {
+            const speaker = data.speaker || data.speakerId || 'AI';
+            
             updateState({
               transcripts: [
                 ...currentState.transcripts,
                 {
-                  speaker: data.speaker || data.speakerId || 'AI',
+                  speaker: speaker,
                   text,
                   translation: data.translation,
                 },
               ],
             });
+
+            // Speak AI responses aloud using browser TTS
+            if ((eventType === 'ai_response' || speaker === 'AI') && typeof window !== 'undefined' && window.speechSynthesis) {
+                // Cancel any ongoing speech if barging in
+                // window.speechSynthesis.cancel(); 
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                
+                // Try to use a better sounding voice if available
+                const voices = window.speechSynthesis.getVoices();
+                const preferredVoice = voices.find(v => v.name.includes('Google') || v.name.includes('Samantha') || v.name.includes('Natural')) || voices[0];
+                if (preferredVoice) {
+                    utterance.voice = preferredVoice;
+                }
+                
+                // Optional: visual feedback when speaking starts/stops
+                utterance.onstart = () => {
+                    updateState({
+                        levels: { ...currentState.levels, isAiSpeaking: true, aiLevel: 0.5 }
+                    });
+                };
+                utterance.onend = () => {
+                    updateState({
+                        levels: { ...currentState.levels, isAiSpeaking: false, aiLevel: 0 }
+                    });
+                };
+                
+                window.speechSynthesis.speak(utterance);
+            }
           }
         } else if (eventType === 'translate_result') {
           if (data.translated) {
