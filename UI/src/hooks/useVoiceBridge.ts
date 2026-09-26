@@ -292,6 +292,156 @@ if (typeof window !== 'undefined') {
   window.addEventListener('keydown', unlockAudio);
 }
 
+// Native Browser Speech & Audio Capture
+let localMediaStream: MediaStream | null = null;
+let localAnalyser: AnalyserNode | null = null;
+let speechRecognizer: any = null;
+let micAnimFrame: number | null = null;
+
+function stopBrowserMic() {
+  if (speechRecognizer) {
+    try {
+      speechRecognizer.stop();
+    } catch (e) {}
+    speechRecognizer = null;
+  }
+  if (micAnimFrame) {
+    cancelAnimationFrame(micAnimFrame);
+    micAnimFrame = null;
+  }
+  if (localMediaStream) {
+    localMediaStream.getTracks().forEach((track) => track.stop());
+    localMediaStream = null;
+  }
+  localAnalyser = null;
+  updateState({
+    levels: { ...currentState.levels, micLevel: 0 },
+  });
+}
+
+async function startBrowserMic() {
+  stopBrowserMic();
+
+  try {
+    const audioCtx = getAudioContext();
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+      },
+    });
+    localMediaStream = stream;
+
+    if (audioCtx) {
+      const source = audioCtx.createMediaStreamSource(stream);
+      const analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 256;
+      analyser.smoothingTimeConstant = 0.3;
+      source.connect(analyser);
+      localAnalyser = analyser;
+
+      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+      const sampleMic = () => {
+        if (!localAnalyser) return;
+        localAnalyser.getByteFrequencyData(dataArray);
+        let sum = 0;
+        for (let i = 0; i < dataArray.length; i++) {
+          sum += dataArray[i];
+        }
+        const avg = sum / dataArray.length;
+        const normalized = Math.min(1, avg / 128);
+
+        // Barge-in detection: user speaks while AI is talking
+        if (normalized > 0.25 && currentState.levels.isAiSpeaking) {
+          stopBrowserAudio();
+          updateState({ isBargeIn: true });
+          if (globalWs && globalWs.readyState === WebSocket.OPEN) {
+            globalWs.send(JSON.stringify({ command: 'interrupt', type: 'interruption' }));
+          }
+          setTimeout(() => updateState({ isBargeIn: false }), 500);
+        }
+
+        updateState({
+          levels: {
+            ...currentState.levels,
+            micLevel: normalized,
+          },
+        });
+
+        micAnimFrame = requestAnimationFrame(sampleMic);
+      };
+      sampleMic();
+    }
+
+    // Initialize Web Speech Recognition for real-time speech catching
+    const SpeechRecognition =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+
+      recognition.onresult = (event: any) => {
+        let interimTranscript = '';
+        let finalTranscript = '';
+
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          const text = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalTranscript += text;
+          } else {
+            interimTranscript += text;
+          }
+        }
+
+        const currentText = (finalTranscript || interimTranscript).trim();
+        if (currentText) {
+          // Send to backend via WebSocket
+          if (globalWs && globalWs.readyState === WebSocket.OPEN) {
+            globalWs.send(
+              JSON.stringify({
+                command: 'send_text',
+                text: currentText,
+                isFinal: Boolean(finalTranscript),
+              })
+            );
+          }
+
+          if (finalTranscript) {
+            updateState({
+              transcripts: [
+                ...currentState.transcripts,
+                { speaker: 'You (Speaker)', text: finalTranscript },
+              ],
+            });
+          }
+        }
+      };
+
+      recognition.onerror = (err: any) => {
+        console.warn('[VoiceBridge] Speech recognition warning:', err.error);
+      };
+
+      recognition.onend = () => {
+        // Auto-restart if mic is still active
+        if (localMediaStream && speechRecognizer) {
+          try {
+            recognition.start();
+          } catch (e) {}
+        }
+      };
+
+      recognition.start();
+      speechRecognizer = recognition;
+    }
+  } catch (err) {
+    console.warn('[VoiceBridge] Microphone access error:', err);
+  }
+}
+
 export function useVoiceBridge() {
   const [state, setState] = useState<VoiceBridgeState>(currentState);
 
@@ -313,13 +463,18 @@ export function useVoiceBridge() {
   const toggleMic = useCallback(
     (active: boolean) => {
       sendCommand({ command: 'toggle_mic', active });
+      if (active) {
+        startBrowserMic();
+      } else {
+        stopBrowserMic();
+      }
     },
     [sendCommand]
   );
 
   const interrupt = useCallback(() => {
     stopBrowserAudio();
-    sendCommand({ command: 'interrupt' });
+    sendCommand({ command: 'interrupt', type: 'interruption' });
   }, [sendCommand]);
 
   const sendText = useCallback(

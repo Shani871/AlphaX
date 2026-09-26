@@ -51,11 +51,33 @@ export const CatchMeUpModal: React.FC<CatchMeUpModalProps> = ({
     } else {
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
+        window.speechSynthesis.resume();
+
         const utterance = new SpeechSynthesisUtterance(summaryParagraph);
         utterance.rate = 1.05;
         utterance.pitch = 1.0;
+
+        const voices = window.speechSynthesis.getVoices();
+        const preferredVoice =
+          voices.find(
+            (v) =>
+              v.lang.startsWith('en') &&
+              (v.name.includes('Natural') ||
+                v.name.includes('Google') ||
+                v.name.includes('Samantha') ||
+                v.name.includes('Ava') ||
+                v.name.includes('Daniel') ||
+                v.name.includes('Karen'))
+          ) || voices.find((v) => v.lang.startsWith('en'));
+
+        if (preferredVoice) {
+          utterance.voice = preferredVoice;
+        }
+
+        utterance.onstart = () => setIsPlayingAudio(true);
         utterance.onend = () => setIsPlayingAudio(false);
         utterance.onerror = () => setIsPlayingAudio(false);
+
         setIsPlayingAudio(true);
         window.speechSynthesis.speak(utterance);
       } else {
