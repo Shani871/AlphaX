@@ -13,6 +13,7 @@ interface VoiceBridgeState {
   isBargeIn: boolean;
   systemActions: { action: string; target: string }[];
   lastTranslation: TranslationData | null;
+  sessionState: any | null;
 }
 
 // Global Singleton State
@@ -31,6 +32,7 @@ let currentState: VoiceBridgeState = {
   isBargeIn: false,
   systemActions: [],
   lastTranslation: null,
+  sessionState: null,
 };
 
 function notifyListeners() {
@@ -266,8 +268,13 @@ function initWebSocket() {
               },
             ],
           });
-        } else if (eventType === 'session_started' || eventType === 'session_restored') {
-          console.log(`[VoiceBridge] Active session: ${data.sessionId}`);
+        } else if (eventType === 'state_update' || eventType === 'session_started' || eventType === 'session_restored') {
+          if (data.state) {
+            updateState({ sessionState: data.state });
+          }
+          if (data.sessionId) {
+            console.log(`[VoiceBridge] Active session: ${data.sessionId}`);
+          }
         }
       } catch (err) {
         console.error('[VoiceBridge Singleton] Parse error:', err);
@@ -499,6 +506,7 @@ export function useVoiceBridge() {
     isBargeIn: state.isBargeIn,
     systemActions: state.systemActions,
     lastTranslation: state.lastTranslation,
+    sessionState: state.sessionState,
     toggleMic,
     interrupt,
     sendText,

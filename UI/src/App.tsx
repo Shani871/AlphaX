@@ -131,6 +131,66 @@ export default function App() {
     }
   }, [voiceBridge.transcripts]);
 
+  // Sync Live Backend Tasks & Decisions from Context Engine
+  useEffect(() => {
+    if (voiceBridge.sessionState) {
+      const { tasks: backendTasks, decisions: backendDecisions } = voiceBridge.sessionState;
+      if (Array.isArray(backendTasks) && backendTasks.length > 0) {
+        setTasks((prev) => {
+          const newTasks = [...prev];
+          backendTasks.forEach((bt: any, idx: number) => {
+            const taskTitle = bt.task || bt.title || bt.taskDesc;
+            if (taskTitle && !newTasks.some((t) => t.title.toLowerCase() === taskTitle.toLowerCase())) {
+              newTasks.push({
+                id: `bt-${idx}-${Date.now()}`,
+                title: taskTitle,
+                owner: bt.owner || 'AI Co-pilot',
+                deadline: bt.deadline || 'Pending',
+                status: 'confirmed',
+              });
+            }
+          });
+          return newTasks;
+        });
+      }
+      if (Array.isArray(backendDecisions) && backendDecisions.length > 0) {
+        setDecisions((prev) => {
+          const newDecisions = [...prev];
+          backendDecisions.forEach((bd: any, idx: number) => {
+            const decText = typeof bd === 'string' ? bd : bd.text || bd.decision;
+            if (decText && !newDecisions.some((d) => d.text.toLowerCase() === decText.toLowerCase())) {
+              newDecisions.push({
+                id: `bd-${idx}-${Date.now()}`,
+                text: decText,
+                actor: bd.actor || 'AuraLive AI',
+                timestamp: new Date().toLocaleTimeString([], { hour12: false }),
+              });
+            }
+          });
+          return newDecisions;
+        });
+      }
+    }
+  }, [voiceBridge.sessionState]);
+
+  // Sync Live System Actions
+  useEffect(() => {
+    if (voiceBridge.systemActions.length > 0) {
+      const lastAction = voiceBridge.systemActions[voiceBridge.systemActions.length - 1];
+      if (lastAction) {
+        setTimelineEvents((prev) => [
+          ...prev,
+          {
+            id: `sys-${Date.now()}`,
+            timestamp: new Date().toLocaleTimeString([], { hour12: false }),
+            type: 'agent_action',
+            description: `${lastAction.action}: ${lastAction.target}`,
+          },
+        ]);
+      }
+    }
+  }, [voiceBridge.systemActions]);
+
   const isAiSpeaking = coreState === 'AI_SPEAKING';
   const isVoiceSpeaking = coreState === 'USER_SPEAKING';
   
