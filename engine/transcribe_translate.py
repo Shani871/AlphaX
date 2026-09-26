@@ -74,7 +74,7 @@ class LiveTranslateEngine:
         self.translate_model = "gemini-3.5-live-translate-preview"
         
         self.config = types.LiveConnectConfig(
-            response_modalities=["AUDIO", "TEXT"], # Request text for terminal printing
+            response_modalities=["AUDIO"],
             # The user requested these specific configs:
             # translation_config: types.TranslationConfig(target_language_code="es", echo_target_language=False)
             # input_audio_transcription: types.AudioTranscriptionConfig()

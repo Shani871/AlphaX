@@ -4,6 +4,7 @@ import sys
 from google import genai
 from google.genai import types
 from engine.audio_io import AudioHardwareManager
+from engine.ui_bridge import ui_bridge
 
 class GeminiLiveBridge:
     def __init__(self, audio_manager: AudioHardwareManager):
@@ -15,20 +16,44 @@ class GeminiLiveBridge:
     async def connect_and_run(self):
         while True:
             try:
+                speech_config = types.SpeechConfig(
+                    voice_config=types.VoiceConfig(
+                        prebuilt_voice_config=types.PrebuiltVoiceConfig(
+                            voice_name="Aoede"
+                        )
+                    )
+                )
+
                 config = types.LiveConnectConfig(
                     response_modalities=["AUDIO"],
+                    speech_config=speech_config,
                     system_instruction=types.Content(
-                        parts=[types.Part.from_text(text=
-                            "You are a real-time tactical co-pilot. Keep responses under 2 sentences. "
-                            "When the user interrupts with a new command, immediately drop previous context, "
-                            "acknowledge the correction in 3 words, and execute the new command."
-                        )]
+                        parts=[
+                            types.Part.from_text(
+                                text="You are AURALIVE, an elite real-time operations co-pilot. "
+                                     "Speak with a natural, crisp, confident female tone. "
+                                     "Focus ONLY on the following languages: Hindi, Odia, Telugu, English. Do not use or switch to any other languages. "
+                                     "Modulate your delivery based on the situation: keep pacing brisk and focused during urgent alerts, and clear and measured during status readouts. "
+                                     "Keep answers strictly under two sentences with zero robotic filler. "
+                                     "Always respond immediately using spoken voice. "
+                                     "You are an agile voice co-pilot. When the user interrupts or speaks over you, immediately abandon your previous response and address the new instruction in under two sentences."
+                            )
+                        ]
                     )
                 )
                 async with self.client.aio.live.connect(model=self.live_model, config=config) as session:
                     self.session = session
                     print("[LIVE CONNECTED] Gemini 3.8 Live Duplex Established")
                     
+                    async def on_text(text: str):
+                        if self.session:
+                            msg = types.LiveClientContent(
+                                turns=[types.Content(role="user", parts=[types.Part.from_text(text=text)])],
+                                turn_complete=True
+                            )
+                            await self.session.send(input=msg)
+                    ui_bridge.text_callback = on_text
+
                     input_stream_task = asyncio.create_task(self._input_stream_task())
                     receive_stream_task = asyncio.create_task(self._receive_stream_task())
                     interruption_monitor_task = asyncio.create_task(self._interruption_monitor_task())
@@ -84,6 +109,7 @@ class GeminiLiveBridge:
                 server_content = response.server_content
                 if server_content and server_content.turn_complete:
                     self.audio_manager.interruption_event.clear()
+                    self.audio_manager.is_interrupted = False
                     sys.stdout.write("\n[TURN COMPLETE]\n")
                     sys.stdout.flush()
                 continue
@@ -96,6 +122,14 @@ class GeminiLiveBridge:
                             sys.stdout.write(".")
                             sys.stdout.flush()
                             await self.audio_manager.play_audio_chunk(part.inline_data.data)
+                        
+                        if part.text:
+                            await ui_bridge.broadcast_ui_event("transcript", {
+                                "speaker": "Friday",
+                                "text": part.text,
+                                "is_final": False
+                            })
+                            
                 if server_content.turn_complete:
                     self.audio_manager.interruption_event.clear()
                     sys.stdout.write("\n[TURN COMPLETE]\n")
@@ -108,10 +142,6 @@ class GeminiLiveBridge:
             if self.session:
                 try:
                     msg = types.LiveClientContent(
-                        turns=[types.Content(
-                            role="user", 
-                            parts=[types.Part.from_text(text="[USER INTERRUPTED - FOCUS ON NEW AUDIO]")]
-                        )],
                         turn_complete=False
                     )
                     await self.session.send(input=msg)

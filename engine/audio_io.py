@@ -3,45 +3,109 @@ import numpy as np
 import sounddevice as sd
 import threading
 import sys
+import collections
+from scipy import signal
+from engine.ui_bridge import ui_bridge
 
 class AudioHardwareManager:
     def __init__(self):
         self.is_ai_speaking = False
+        self.is_interrupted = False
         self.interruption_event = asyncio.Event()
         
         self.audio_queue = asyncio.Queue()
-        self.playback_queue = asyncio.Queue()
+        self.playback_queue = collections.deque()
+        self.playback_remainder = b''
+        self._playback_lock = threading.Lock()
         
         self.capture_stream = None
         self.playback_stream = None
         self._loop = None
-        self._playback_lock = threading.Lock()
         self._stop_event = threading.Event()
+        
+        # 80Hz High-Pass Filter for 16kHz
+        self.sos = signal.butter(4, 80, 'hp', fs=16000, output='sos')
+        self.zi = signal.sosfilt_zi(self.sos)
+        self.double_talk_counter = 0
         
     def _audio_callback(self, indata, frames, time_info, status):
         if status:
             pass
         
-        # Compute real-time RMS energy
+        # Apply High-Pass Filter
         audio_float = np.frombuffer(indata, dtype=np.int16).astype(np.float32)
-        rms = np.sqrt(np.mean(audio_float**2)) if len(audio_float) > 0 else 0.0
+        filtered_audio, self.zi = signal.sosfilt(self.sos, audio_float, zi=self.zi)
+        filtered_audio_int16 = np.clip(filtered_audio, -32768, 32767).astype(np.int16)
+        
+        # Compute real-time RMS energy on filtered audio
+        rms = np.sqrt(np.mean(filtered_audio_int16.astype(np.float32)**2)) if len(filtered_audio_int16) > 0 else 0.0
+        
+        # Noise Gate: drop frames with very low energy (ambient noise)
+        gate_threshold = 200
+        if rms < gate_threshold:
+            filtered_audio_int16.fill(0)
         
         # Double-talk threshold vs normal speaking threshold
-        threshold = 1800 if self.is_ai_speaking else 600
-        
-        if rms > threshold:
-            if self.is_ai_speaking:
-                if self._loop:
-                    self._loop.call_soon_threadsafe(self._trigger_barge_in)
+        if self.is_ai_speaking:
+            if rms > 1000:
+                self.double_talk_counter += 1
+                if self.double_talk_counter >= 2:
+                    if self._loop:
+                        self._loop.call_soon_threadsafe(self._trigger_barge_in)
+                    self.double_talk_counter = 0
+            else:
+                self.double_talk_counter = 0
+        else:
+            if rms > 500:
+                pass # is_user_speaking = True
                     
         if self._loop:
-            self._loop.call_soon_threadsafe(self.audio_queue.put_nowait, bytes(indata))
+            self._loop.call_soon_threadsafe(self.audio_queue.put_nowait, filtered_audio_int16.tobytes())
+            
+        # Throttled UI broadcast (roughly every chunk)
+        mic_level = min(1.0, rms / 4000.0)
+        ai_level = 0.8 if self.is_ai_speaking else 0.0
+        ui_bridge.broadcast_ui_event_sync("audio_wave", {
+            "mic_level": mic_level,
+            "ai_level": ai_level,
+            "is_ai_speaking": self.is_ai_speaking
+        })
 
     def _trigger_barge_in(self):
-        sys.stdout.write("\n[BARGE-IN DETECTED] Cutting AI voice and resetting context...\n")
+        sys.stdout.write("\n⚡ [BARGE-IN TRIGGERED] Speaker cut, routing live audio to Gemini...\n")
         sys.stdout.flush()
         self.abort_playback()
         self.interruption_event.set()
+
+    def _playback_callback(self, outdata, frames, time_info, status):
+        if self.is_interrupted:
+            outdata[:] = b'\x00' * len(outdata)
+            with self._playback_lock:
+                self.playback_queue.clear()
+                self.playback_remainder = b''
+            self.is_ai_speaking = False
+            return
+
+        bytes_needed = len(outdata)
+        out_idx = 0
+        
+        with self._playback_lock:
+            while out_idx < bytes_needed:
+                if not self.playback_remainder:
+                    if not self.playback_queue:
+                        break
+                    self.playback_remainder = self.playback_queue.popleft()
+                
+                take = min(bytes_needed - out_idx, len(self.playback_remainder))
+                outdata[out_idx:out_idx+take] = self.playback_remainder[:take]
+                self.playback_remainder = self.playback_remainder[take:]
+                out_idx += take
+                
+        if out_idx < bytes_needed:
+            outdata[out_idx:] = b'\x00' * (bytes_needed - out_idx)
+            self.is_ai_speaking = False
+        else:
+            self.is_ai_speaking = True
 
     async def start_capture(self):
         self._loop = asyncio.get_running_loop()
@@ -60,62 +124,26 @@ class AudioHardwareManager:
             samplerate=24000,
             channels=1,
             dtype='int16',
-            blocksize=1024
+            blocksize=512,
+            callback=self._playback_callback
         )
         self.playback_stream.start()
         print("[SPEAKER READY] 24kHz Duplex Output Active")
-        
-        self._playback_task = self._loop.create_task(self._playback_loop())
 
     async def get_audio_chunk(self) -> bytes | None:
         return await self.audio_queue.get()
 
     async def play_audio_chunk(self, data: bytes):
-        await self.playback_queue.put(data)
-
-    async def _playback_loop(self):
-        while not self._stop_event.is_set():
-            try:
-                data = await asyncio.wait_for(self.playback_queue.get(), timeout=0.1)
-                if data is None:
-                    break
-                self.is_ai_speaking = True
-                await self._loop.run_in_executor(None, self._write_to_stream, data)
-            except asyncio.TimeoutError:
-                self.is_ai_speaking = False
-            except Exception as e:
-                import traceback
-                traceback.print_exc()
-
-    def _write_to_stream(self, data: bytes):
         with self._playback_lock:
-            if self.playback_stream and not self.playback_stream.closed:
-                try:
-                    self.playback_stream.write(data)
-                except Exception:
-                    pass
+            self.playback_queue.append(data)
 
     def abort_playback(self):
-        # 1. Clear all pending chunks from the output queue immediately
-        while not self.playback_queue.empty():
-            try:
-                self.playback_queue.get_nowait()
-            except asyncio.QueueEmpty:
-                break
-        
-        # 2. Write zero-filled silence blocks to the stream buffer
+        self.is_interrupted = True
         with self._playback_lock:
-            if self.playback_stream and not self.playback_stream.closed:
-                try:
-                    self.playback_stream.abort()
-                    self.playback_stream.start()
-                    silence = np.zeros(1024, dtype=np.int16).tobytes()
-                    self.playback_stream.write(silence)
-                except Exception:
-                    pass
-                    
-        # 3. Set is_ai_speaking to False
-        self.is_ai_speaking = False
+            self.playback_queue.clear()
+            self.playback_remainder = b''
+        import time
+        ui_bridge.broadcast_ui_event_sync("barge_in", {"timestamp": int(time.time() * 1000)})
 
     def stop(self):
         self._stop_event.set()

@@ -1,0 +1,11 @@
+{
+  "name": "WOW — Real-Time Voice Intelligence Workspace",
+  "description": "WOW turns conversations into action. Real-time multi-speaker voice intelligence with live transcription, translation, decisions, tasks, and catch-up recaps.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
+
