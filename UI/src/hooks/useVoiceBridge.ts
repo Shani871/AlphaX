@@ -144,18 +144,50 @@ function playPcmChunk(base64Data: string, rate: number = 24000) {
   }
 }
 
+function getWebSocketUrl(): string {
+  // 1. Explicit env variables
+  const envWs = (import.meta.env.VITE_BACKEND_WS_URL as string) || (import.meta.env.VITE_WS_URL as string);
+  if (envWs && envWs.trim()) {
+    return envWs.trim();
+  }
+
+  // 2. Runtime browser dynamic resolution
+  if (typeof window !== 'undefined') {
+    const isHttps = window.location.protocol === 'https:';
+    const wsProto = isHttps ? 'wss:' : 'ws:';
+    const host = window.location.host;
+    const hostname = window.location.hostname;
+
+    // Cloud Run deployment: alpha-ui-xxx.a.run.app -> alpha-backend-xxx.a.run.app
+    if (hostname.includes('alpha-ui')) {
+      const backendHost = host.replace('alpha-ui', 'alpha-backend');
+      return `${wsProto}//${backendHost}/ws`;
+    }
+
+    // Local development
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'ws://127.0.0.1:8765';
+    }
+
+    return `${wsProto}//${host}/ws`;
+  }
+
+  return 'ws://127.0.0.1:8765';
+}
+
 function initWebSocket() {
   if (globalWs && (globalWs.readyState === WebSocket.OPEN || globalWs.readyState === WebSocket.CONNECTING)) {
     return;
   }
 
   try {
-    const wsUrl = (import.meta.env.VITE_WS_URL as string) || 'ws://127.0.0.1:8765';
+    const wsUrl = getWebSocketUrl();
+    console.log(`[VoiceBridge] Connecting to WebSocket: ${wsUrl}`);
     const ws = new WebSocket(wsUrl);
     globalWs = ws;
 
     ws.onopen = () => {
-      console.log(`[VoiceBridge Singleton] Connected to AuraLive AI backend at ${wsUrl}`);
+      console.log(`[VoiceBridge] Connected to backend gateway at: ${wsUrl}`);
       updateState({ isConnected: true });
     };
 
@@ -168,7 +200,8 @@ function initWebSocket() {
       }, 2000);
     };
 
-    ws.onerror = () => {
+    ws.onerror = (e) => {
+      console.warn('[VoiceBridge] WebSocket error:', e);
       ws.close();
     };
 
@@ -176,12 +209,15 @@ function initWebSocket() {
       try {
         const data = JSON.parse(event.data);
 
-        if (data.event === 'audio_output') {
+        // Python Audio Bridge & Node Gateway compatibility
+        const eventType = data.event || data.type;
+
+        if (eventType === 'audio_output') {
           // Play once through the single AudioContext
           if (data.pcm) {
             playPcmChunk(data.pcm, data.rate || 24000);
           }
-        } else if (data.event === 'audio_wave') {
+        } else if (eventType === 'audio_wave') {
           updateState({
             levels: {
               ...currentState.levels,
@@ -192,20 +228,21 @@ function initWebSocket() {
               isAiSpeaking: currentState.levels.isAiSpeaking || Boolean(data.is_ai_speaking),
             },
           });
-        } else if (data.event === 'transcript') {
-          if (data.text) {
+        } else if (eventType === 'transcript' || eventType === 'ai_response') {
+          const text = data.text || data.transcript;
+          if (text) {
             updateState({
               transcripts: [
                 ...currentState.transcripts,
                 {
-                  speaker: data.speaker || 'AI',
-                  text: data.text,
+                  speaker: data.speaker || data.speakerId || 'AI',
+                  text,
                   translation: data.translation,
                 },
               ],
             });
           }
-        } else if (data.event === 'translate_result') {
+        } else if (eventType === 'translate_result') {
           if (data.translated) {
             updateState({
               lastTranslation: {
@@ -215,17 +252,22 @@ function initWebSocket() {
               },
             });
           }
-        } else if (data.event === 'barge_in') {
+        } else if (eventType === 'barge_in') {
           stopBrowserAudio();
           updateState({ isBargeIn: true });
           setTimeout(() => updateState({ isBargeIn: false }), 500);
-        } else if (data.event === 'system_action') {
+        } else if (eventType === 'system_action' || eventType === 'action_completed') {
           updateState({
             systemActions: [
               ...currentState.systemActions,
-              { action: data.action, target: data.target },
+              {
+                action: data.action || data.intent || 'Action Executed',
+                target: data.target || (data.entities ? JSON.stringify(data.entities) : ''),
+              },
             ],
           });
+        } else if (eventType === 'session_started' || eventType === 'session_restored') {
+          console.log(`[VoiceBridge] Active session: ${data.sessionId}`);
         }
       } catch (err) {
         console.error('[VoiceBridge Singleton] Parse error:', err);

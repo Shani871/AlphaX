@@ -6,8 +6,10 @@ WORKDIR /app
 # Accept build arguments for dynamic backend URL injection
 ARG VITE_BACKEND_URL=""
 ARG VITE_BACKEND_WS_URL=""
+ARG VITE_WS_URL=""
 ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
 ENV VITE_BACKEND_WS_URL=$VITE_BACKEND_WS_URL
+ENV VITE_WS_URL=$VITE_WS_URL
 
 COPY package*.json ./
 RUN npm ci
