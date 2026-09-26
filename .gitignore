@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+venv/
+.env
+
+# Python caches
+__pycache__/
+*.py[cod]
+
+# Audio dumps
+*.pcm
+*.wav
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Databases
+*.sqlite
+*.sqlite3
+*.db
