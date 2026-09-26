@@ -7,21 +7,13 @@ class TranscribeEngine:
     def __init__(self, audio_manager: AudioHardwareManager):
         self.audio_manager = audio_manager
         self.client = genai.Client()
-        self.transcribe_model = "gemini-3.5-transcribe"
+        self.transcribe_model = "gemini-3.5-transcribe-live"
         
         self.config = types.LiveConnectConfig(
             response_modalities=["TEXT"],
-            # Hypothetical configs based on requirements
-            speech_config=types.SpeechConfig(
-                # Enable speaker diarization and language detection (if supported by types)
-            ),
-            # Mocking the biasing config with system instruction for now
-            system_instruction=types.Content(
-                parts=[types.Part.from_text(
-                    "You are a real-time transcription engine. "
-                    "Perform speaker diarization (Speaker 1, Speaker 2) and language detection (en, es, hi). "
-                    "Tactical vocabulary tags for mission-critical terms: flight vectors, coordinates, medical status."
-                )]
+            input_audio_transcription=types.AudioTranscriptionConfig(
+                language_codes=[],
+                custom_vocabulary=["flight vector", "coordinates", "medical status"],
             )
         )
         self.session = None
@@ -29,7 +21,7 @@ class TranscribeEngine:
     async def connect_and_run(self):
         async with self.client.aio.live.connect(model=self.transcribe_model, config=self.config) as session:
             self.session = session
-            print("Connected to Gemini Transcribe (Diarization).")
+            print("Connected to Gemini Live Transcription.")
             
             send_task = asyncio.create_task(self._send_audio_loop())
             receive_task = asyncio.create_task(self._receive_text_loop())
@@ -58,20 +50,21 @@ class TranscribeEngine:
             try:
                 async for response in self.session.receive():
                     server_content = response.server_content
-                    if server_content and server_content.model_turn:
-                        for part in server_content.model_turn.parts:
-                            if part.text:
-                                print(f"[Transcribe Diarization] {part.text}")
+                    if server_content and server_content.input_transcription:
+                        print(f"[Transcription] {server_content.input_transcription.text}")
             except asyncio.CancelledError:
                 break
             except Exception as e:
                 print(f"Error in transcribe receive loop: {e}")
                 break
 
-    async def send_audio(self, chunk: bytes):
+    async def send_audio(self, chunk: bytes | None):
         if self.session:
+            if chunk is None:
+                await self.session.send_realtime_input(audio_stream_end=True)
+                return
             await self.session.send_realtime_input(
-                [types.Part.from_bytes(data=chunk, mime_type="audio/pcm;rate=16000")]
+                audio=types.Blob(data=chunk, mime_type="audio/pcm;rate=16000")
             )
 
 class LiveTranslateEngine:
@@ -139,8 +132,11 @@ class LiveTranslateEngine:
         except Exception as e:
             print(f"Failed to open sink: {e}")
 
-    async def send_audio(self, chunk: bytes):
+    async def send_audio(self, chunk: bytes | None):
         if self.session:
+            if chunk is None:
+                await self.session.send_realtime_input(audio_stream_end=True)
+                return
             await self.session.send_realtime_input(
-                [types.Part.from_bytes(data=chunk, mime_type="audio/pcm;rate=16000")]
+                audio=types.Blob(data=chunk, mime_type="audio/pcm;rate=16000")
             )
