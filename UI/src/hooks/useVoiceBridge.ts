@@ -168,13 +168,13 @@ function getWebSocketUrl(): string {
 
     // Local development
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      return 'ws://127.0.0.1:8765';
+      return 'ws://127.0.0.1:4000/ws';
     }
 
     return `${wsProto}//${host}/ws`;
   }
 
-  return 'ws://127.0.0.1:8765';
+  return 'ws://127.0.0.1:4000/ws';
 }
 
 function initWebSocket() {
