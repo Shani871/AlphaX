@@ -191,8 +191,12 @@ function initWebSocket() {
     ws.onopen = () => {
       console.log(`[VoiceBridge] Connected to backend gateway at: ${wsUrl}`);
       updateState({ isConnected: true });
-      // Auto-start microphone and speech recognition on connect
-      startBrowserMic();
+      // Queue mic start — will activate on first user gesture (Chrome autoplay policy)
+      pendingMicStart = true;
+      if (userHasInteracted) {
+        startBrowserMic();
+        pendingMicStart = false;
+      }
     };
 
     ws.onclose = () => {
@@ -290,15 +294,30 @@ function initWebSocket() {
   }
 }
 
-// Unlock Web Audio context on user interaction
+// Track user gesture for Chrome autoplay policy
+let userHasInteracted = false;
+let pendingMicStart = false;
+
 if (typeof window !== 'undefined') {
-  const unlockAudio = () => {
-    getAudioContext();
-    window.removeEventListener('click', unlockAudio);
-    window.removeEventListener('keydown', unlockAudio);
+  const activateOnGesture = () => {
+    userHasInteracted = true;
+    // Create / resume AudioContext now that we have a user gesture
+    const ctx = getAudioContext();
+    if (ctx && ctx.state === 'suspended') {
+      ctx.resume().catch(() => {});
+    }
+    // Start mic if WebSocket already connected and waiting
+    if (pendingMicStart) {
+      startBrowserMic();
+      pendingMicStart = false;
+    }
+    window.removeEventListener('click', activateOnGesture);
+    window.removeEventListener('keydown', activateOnGesture);
+    window.removeEventListener('touchstart', activateOnGesture);
   };
-  window.addEventListener('click', unlockAudio);
-  window.addEventListener('keydown', unlockAudio);
+  window.addEventListener('click', activateOnGesture);
+  window.addEventListener('keydown', activateOnGesture);
+  window.addEventListener('touchstart', activateOnGesture);
 }
 
 // Native Browser Speech & Audio Capture
