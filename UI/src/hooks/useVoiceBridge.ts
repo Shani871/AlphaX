@@ -150,11 +150,12 @@ function initWebSocket() {
   }
 
   try {
-    const ws = new WebSocket('ws://127.0.0.1:8765');
+    const wsUrl = (import.meta.env.VITE_WS_URL as string) || 'ws://127.0.0.1:8765';
+    const ws = new WebSocket(wsUrl);
     globalWs = ws;
 
     ws.onopen = () => {
-      console.log('[VoiceBridge Singleton] Connected to AuraLive AI backend ws://127.0.0.1:8765');
+      console.log(`[VoiceBridge Singleton] Connected to AuraLive AI backend at ${wsUrl}`);
       updateState({ isConnected: true });
     };
 
