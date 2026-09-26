@@ -20,14 +20,14 @@ export const AvatarSwitcher: React.FC<AvatarSwitcherProps> = ({
 }) => {
   return (
     <div
-      className={`inline-flex items-center gap-1 p-1 rounded-full bg-[#141619]/90 backdrop-blur-md border border-[#26292F] shadow-lg ${className}`}
+      className={`inline-flex items-center gap-1 p-1 rounded-full bg-[#050505]/90 backdrop-blur-md border border-[#26292F] shadow-lg ${className}`}
     >
       <button
         onClick={() => onGenderChange('male')}
         className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer ${
           gender === 'male'
-            ? 'bg-[#5B7FFF]/20 text-[#5B7FFF] border border-[#5B7FFF]/40 shadow-[0_0_12px_rgba(91,127,255,0.25)]'
-            : 'text-[#A3AAB5] hover:text-[#EDEFF2] hover:bg-[#1C1F24]'
+            ? 'bg-[#7FFFD4]/20 text-[#7FFFD4] border border-[#7FFFD4]/40 shadow-[0_0_12px_rgba(91,127,255,0.25)]'
+            : 'text-[#A3AAB5] hover:text-[#EDEFF2] hover:bg-[#0A0A0A]'
         }`}
         title="Select Male Virtual Assistant (Mid-20s)"
       >
@@ -39,8 +39,8 @@ export const AvatarSwitcher: React.FC<AvatarSwitcherProps> = ({
         onClick={() => onGenderChange('female')}
         className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer ${
           gender === 'female'
-            ? 'bg-[#5B7FFF]/20 text-[#5B7FFF] border border-[#5B7FFF]/40 shadow-[0_0_12px_rgba(91,127,255,0.25)]'
-            : 'text-[#A3AAB5] hover:text-[#EDEFF2] hover:bg-[#1C1F24]'
+            ? 'bg-[#7FFFD4]/20 text-[#7FFFD4] border border-[#7FFFD4]/40 shadow-[0_0_12px_rgba(91,127,255,0.25)]'
+            : 'text-[#A3AAB5] hover:text-[#EDEFF2] hover:bg-[#0A0A0A]'
         }`}
         title="Select Female Virtual Assistant (Mid-20s)"
       >

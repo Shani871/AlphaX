@@ -23,10 +23,21 @@ class AudioHardwareManager:
         self._loop = None
         self._stop_event = threading.Event()
         
+        self.subscribers = []
+        
         # 80Hz High-Pass Filter for 16kHz
         self.sos = signal.butter(4, 80, 'hp', fs=16000, output='sos')
         self.zi = signal.sosfilt_zi(self.sos)
         self.double_talk_counter = 0
+
+    def subscribe(self) -> asyncio.Queue:
+        q = asyncio.Queue()
+        self.subscribers.append(q)
+        return q
+
+    def unsubscribe(self, q: asyncio.Queue):
+        if q in self.subscribers:
+            self.subscribers.remove(q)
         
     def _audio_callback(self, indata, frames, time_info, status):
         if status:
@@ -60,15 +71,18 @@ class AudioHardwareManager:
                 pass # is_user_speaking = True
                     
         if self._loop:
-            self._loop.call_soon_threadsafe(self.audio_queue.put_nowait, filtered_audio_int16.tobytes())
+            chunk_bytes = filtered_audio_int16.tobytes()
+            self._loop.call_soon_threadsafe(self.audio_queue.put_nowait, chunk_bytes)
+            for sub_q in self.subscribers:
+                self._loop.call_soon_threadsafe(sub_q.put_nowait, chunk_bytes)
             
         # Throttled UI broadcast (roughly every chunk)
-        mic_level = min(1.0, rms / 4000.0)
-        ai_level = 0.8 if self.is_ai_speaking else 0.0
+        mic_level = float(min(1.0, float(rms) / 4000.0))
+        ai_level = float(0.8 if self.is_ai_speaking else 0.0)
         ui_bridge.broadcast_ui_event_sync("audio_wave", {
             "mic_level": mic_level,
             "ai_level": ai_level,
-            "is_ai_speaking": self.is_ai_speaking
+            "is_ai_speaking": bool(self.is_ai_speaking)
         })
 
     def _trigger_barge_in(self):
@@ -120,22 +134,15 @@ class AudioHardwareManager:
         self.capture_stream.start()
         print("[MIC READY] 16kHz Mono Stream Active")
         
-        self.playback_stream = sd.RawOutputStream(
-            samplerate=24000,
-            channels=1,
-            dtype='int16',
-            blocksize=512,
-            callback=self._playback_callback
-        )
-        self.playback_stream.start()
-        print("[SPEAKER READY] 24kHz Duplex Output Active")
+        # Terminal local speaker is disabled; audio plays exclusively through the website browser
+        self.playback_stream = None
+        print("[AUDIO ROUTING] Web Browser Audio Playback Active (Terminal Speaker Muted)")
 
     async def get_audio_chunk(self) -> bytes | None:
         return await self.audio_queue.get()
 
     async def play_audio_chunk(self, data: bytes):
-        with self._playback_lock:
-            self.playback_queue.append(data)
+        pass # Audio is handled exclusively by the website browser
 
     def abort_playback(self):
         self.is_interrupted = True

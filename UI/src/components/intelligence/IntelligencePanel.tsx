@@ -66,7 +66,7 @@ export const IntelligencePanel: React.FC<IntelligencePanelProps> = ({
 
         {/* TASKS Section */}
         <div className="pt-4 space-y-2.5">
-          <div className="text-[11px] font-bold text-[#5B7FFF] tracking-wider uppercase flex items-center justify-between">
+          <div className="text-[11px] font-bold text-[#7FFFD4] tracking-wider uppercase flex items-center justify-between">
             <span>TASKS</span>
             <span className="text-[10px] font-mono text-[#5F6773]">{tasks.length}</span>
           </div>
@@ -91,7 +91,7 @@ export const IntelligencePanel: React.FC<IntelligencePanelProps> = ({
                     ) : (
                       <button
                         onClick={() => onTaskStatusChange(t.id, 'confirmed')}
-                        className="text-[10px] font-semibold text-[#5B7FFF] hover:text-[#7292FF] hover:underline shrink-0 cursor-pointer"
+                        className="text-[10px] font-semibold text-[#7FFFD4] hover:text-[#7292FF] hover:underline shrink-0 cursor-pointer"
                       >
                         Confirm
                       </button>
@@ -153,18 +153,18 @@ export const IntelligencePanel: React.FC<IntelligencePanelProps> = ({
       <div className="pt-4 border-t border-[#26292F]">
         <button
           onClick={onCatchMeUp}
-          className="w-full p-3 rounded-lg bg-[#141619] hover:bg-[#1C1F24] border border-[#5B7FFF]/30 hover:border-[#5B7FFF]/60 text-left transition-all cursor-pointer group shadow-sm flex items-center justify-between"
+          className="w-full p-3 rounded-lg bg-[#050505] hover:bg-[#0A0A0A] border border-[#7FFFD4]/30 hover:border-[#7FFFD4]/60 text-left transition-all cursor-pointer group shadow-sm flex items-center justify-between"
         >
           <div>
             <div className="flex items-center gap-1.5 text-xs font-bold text-[#EDEFF2] group-hover:text-white">
-              <Sparkles className="w-3.5 h-3.5 text-[#5B7FFF]" />
+              <Sparkles className="w-3.5 h-3.5 text-[#7FFFD4]" />
               <span>Catch Me Up</span>
             </div>
             <div className="text-[11px] text-[#5F6773] mt-0.5">
               Hear what you missed · AI spoken audio
             </div>
           </div>
-          <span className="text-xs font-bold text-[#5B7FFF] group-hover:translate-x-0.5 transition-transform">
+          <span className="text-xs font-bold text-[#7FFFD4] group-hover:translate-x-0.5 transition-transform">
             →
           </span>
         </button>

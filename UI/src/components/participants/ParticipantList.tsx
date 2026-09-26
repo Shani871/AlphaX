@@ -42,7 +42,7 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
                 className={`flex items-center justify-between py-2 px-2.5 rounded-md transition-all ${
                   isSpeaking
                     ? 'bg-[#3ECF8E]/10 border-l-2 border-[#3ECF8E]'
-                    : 'hover:bg-[#141619]/40 border-l-2 border-transparent'
+                    : 'hover:bg-[#050505]/40 border-l-2 border-transparent'
                 }`}
               >
                 <div className="flex items-center gap-2.5 min-w-0">
@@ -92,7 +92,7 @@ export const ParticipantList: React.FC<ParticipantListProps> = ({
                 className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs transition-colors ${
                   isTranslating
                     ? 'bg-[#E3A54A]/10 text-[#E3A54A] border border-[#E3A54A]/30'
-                    : 'bg-[#141619] text-[#A3AAB5] border border-[#26292F]'
+                    : 'bg-[#050505] text-[#A3AAB5] border border-[#26292F]'
                 }`}
               >
                 <span className="text-sm">{lang.flag}</span>

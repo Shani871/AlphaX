@@ -1,6 +1,7 @@
 import asyncio
 import traceback
 import sys
+import base64
 from google import genai
 from google.genai import types
 from engine.audio_io import AudioHardwareManager
@@ -12,6 +13,8 @@ class GeminiLiveBridge:
         self.client = genai.Client()
         self.live_model = "gemini-3.8-live"
         self.session = None
+        self.audio_queue = self.audio_manager.subscribe()
+        self.ai_speech_buffer = []
 
     async def connect_and_run(self):
         while True:
@@ -24,13 +27,13 @@ class GeminiLiveBridge:
                     )
                 )
 
-                config = types.LiveConnectConfig(
-                    response_modalities=["AUDIO"],
-                    speech_config=speech_config,
-                    system_instruction=types.Content(
+                config_kwargs = {
+                    "response_modalities": ["AUDIO"],
+                    "speech_config": speech_config,
+                    "system_instruction": types.Content(
                         parts=[
                             types.Part.from_text(
-                                text="You are AURALIVE, an elite real-time operations co-pilot. "
+                                text="You are AuraLive AI, an elite real-time operations, speech, and intelligence co-pilot. "
                                      "Speak with a natural, crisp, confident female tone. "
                                      "Focus ONLY on the following languages: Hindi, Odia, Telugu, English. Do not use or switch to any other languages. "
                                      "Modulate your delivery based on the situation: keep pacing brisk and focused during urgent alerts, and clear and measured during status readouts. "
@@ -40,10 +43,17 @@ class GeminiLiveBridge:
                             )
                         ]
                     )
-                )
+                }
+
+                if hasattr(types, "AudioTranscriptionConfig"):
+                    config_kwargs["input_audio_transcription"] = types.AudioTranscriptionConfig()
+                    config_kwargs["output_audio_transcription"] = types.AudioTranscriptionConfig()
+
+                config = types.LiveConnectConfig(**config_kwargs)
+
                 async with self.client.aio.live.connect(model=self.live_model, config=config) as session:
                     self.session = session
-                    print("[LIVE CONNECTED] Gemini 3.8 Live Duplex Established")
+                    print("[LIVE CONNECTED] AuraLive AI Gemini Live Duplex Established")
                     
                     async def on_text(text: str):
                         if self.session:
@@ -67,87 +77,115 @@ class GeminiLiveBridge:
                         task.cancel()
                         
                     for task in done:
-                        if task.exception():
-                            raise task.exception()
+                        if not task.cancelled():
+                            exc = task.exception()
+                            if exc is not None:
+                                raise exc
                             
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                print(f"[WARN] Connection dropped, reconnecting in 2s... {e}")
+                print(f"[WARN] AuraLive AI connection reconnecting in 2s... {e}")
                 self.session = None
                 await asyncio.sleep(2)
 
     async def _input_stream_task(self):
         while True:
-            chunk = await self.audio_manager.audio_queue.get()
+            chunk = await self.audio_queue.get()
             if chunk is None:
-                if self.session:
-                    await self.session.send_realtime_input(audio_stream_end=True)
                 break
             if self.session:
-                await self.session.send_realtime_input(
-                    audio=types.Blob(data=chunk, mime_type="audio/pcm;rate=16000")
-                )
+                try:
+                    await self.session.send_realtime_input(
+                        audio=types.Blob(data=chunk, mime_type="audio/pcm;rate=16000")
+                    )
+                except Exception:
+                    pass
 
     async def send_audio(self, chunk: bytes | None):
-        # Fallback method if external files call it
-        if not self.session:
+        if not self.session or chunk is None:
             return
-        if chunk is None:
-            await self.session.send_realtime_input(audio_stream_end=True)
-            return
-        await self.session.send_realtime_input(
-            audio=types.Blob(data=chunk, mime_type="audio/pcm;rate=16000")
-        )
+        try:
+            await self.session.send_realtime_input(
+                audio=types.Blob(data=chunk, mime_type="audio/pcm;rate=16000")
+            )
+        except Exception:
+            pass
 
     async def _receive_stream_task(self):
         if not self.session:
             return
         async for response in self.session.receive():
             if self.audio_manager.interruption_event.is_set():
-                # discard incoming chunks until the server finishes the old turn
                 server_content = response.server_content
                 if server_content and server_content.turn_complete:
                     self.audio_manager.interruption_event.clear()
                     self.audio_manager.is_interrupted = False
-                    sys.stdout.write("\n[TURN COMPLETE]\n")
+                    self.ai_speech_buffer.clear()
+                    sys.stdout.write("\n[TURN COMPLETE - INTERRUPTED]\n")
                     sys.stdout.flush()
                 continue
                 
             server_content = response.server_content
             if server_content:
+                # 1. Capture User Speech Transcription
+                if hasattr(server_content, 'input_transcription') and server_content.input_transcription:
+                    user_text = getattr(server_content.input_transcription, 'text', None)
+                    if user_text:
+                        sys.stdout.write(f"\n[User] {user_text}\n")
+                        sys.stdout.flush()
+                        await ui_bridge.broadcast_ui_event("transcript", {
+                            "speaker": "User",
+                            "text": user_text,
+                            "is_final": True
+                        })
+
+                # 2. Stream AI Voice Audio to the Website Browser
                 if server_content.model_turn:
                     for part in server_content.model_turn.parts:
                         if part.inline_data and part.inline_data.data:
                             sys.stdout.write(".")
                             sys.stdout.flush()
-                            await self.audio_manager.play_audio_chunk(part.inline_data.data)
-                        
-                        if part.text:
-                            await ui_bridge.broadcast_ui_event("transcript", {
-                                "speaker": "Friday",
-                                "text": part.text,
-                                "is_final": False
+                            # Stream audio to website browser
+                            b64_audio = base64.b64encode(part.inline_data.data).decode('ascii')
+                            await ui_bridge.broadcast_ui_event("audio_output", {
+                                "pcm": b64_audio,
+                                "rate": 24000
                             })
-                            
+
+                # 3. Capture AI Speech Text Output Transcription
+                if hasattr(server_content, 'output_transcription') and server_content.output_transcription:
+                    part_text = getattr(server_content.output_transcription, 'text', None)
+                    if part_text:
+                        self.ai_speech_buffer.append(part_text)
+
+                # 4. Turn Complete -> Broadcast Full AI Message
                 if server_content.turn_complete:
                     self.audio_manager.interruption_event.clear()
+                    full_ai_text = "".join(self.ai_speech_buffer).strip()
+                    if full_ai_text:
+                        sys.stdout.write(f"\n[AuraLive AI] {full_ai_text}\n")
+                        sys.stdout.flush()
+                        await ui_bridge.broadcast_ui_event("transcript", {
+                            "speaker": "AuraLive AI",
+                            "text": full_ai_text,
+                            "is_final": True
+                        })
+                    self.ai_speech_buffer.clear()
                     sys.stdout.write("\n[TURN COMPLETE]\n")
                     sys.stdout.flush()
 
     async def _interruption_monitor_task(self):
         while True:
             await self.audio_manager.interruption_event.wait()
+            self.audio_manager.interruption_event.clear()
             self.audio_manager.abort_playback()
+            self.ai_speech_buffer.clear()
             if self.session:
                 try:
-                    msg = types.LiveClientContent(
-                        turn_complete=False
-                    )
-                    await self.session.send(input=msg)
-                except Exception as e:
-                    # Fallback if text payload fails
-                    await self.session.send_realtime_input(audio_stream_end=True)
-            
-            # Give it a tiny delay so we don't spam interrupts on noise
+                    await self.session.send(input=types.LiveClientContent(
+                        turn_complete=True
+                    ))
+                except Exception:
+                    pass
             await asyncio.sleep(0.3)

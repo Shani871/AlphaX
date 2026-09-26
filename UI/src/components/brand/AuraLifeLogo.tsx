@@ -54,7 +54,7 @@ export const AuraLifeLogo: React.FC<AuraLifeLogoProps> = ({
       >
         {/* Soft Ambient Luminous Halo */}
         <div
-          className="absolute inset-0 rounded-xl bg-gradient-to-tr from-[#5B7FFF]/25 to-[#3ECF8E]/25 blur-md pointer-events-none group-hover:from-[#5B7FFF]/40 group-hover:to-[#3ECF8E]/40 transition-all duration-300"
+          className="absolute inset-0 rounded-xl bg-gradient-to-tr from-[#7FFFD4]/25 to-[#3ECF8E]/25 blur-md pointer-events-none group-hover:from-[#7FFFD4]/40 group-hover:to-[#3ECF8E]/40 transition-all duration-300"
         />
 
         <svg
@@ -69,7 +69,7 @@ export const AuraLifeLogo: React.FC<AuraLifeLogoProps> = ({
             {/* Primary Electric Blue to Luminous Cyan Gradient */}
             <linearGradient id="auraA_stroke" x1="4" y1="36" x2="36" y2="4" gradientUnits="userSpaceOnUse">
               <stop offset="0%" stopColor="#4A6EFF" />
-              <stop offset="55%" stopColor="#5B7FFF" />
+              <stop offset="55%" stopColor="#7FFFD4" />
               <stop offset="100%" stopColor="#3ECF8E" />
             </linearGradient>
 
@@ -82,7 +82,7 @@ export const AuraLifeLogo: React.FC<AuraLifeLogoProps> = ({
 
             {/* Subtle Aura Glow Fill */}
             <radialGradient id="auraGlowFill" cx="20" cy="22" r="14" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stopColor="#5B7FFF" stopOpacity="0.22" />
+              <stop offset="0%" stopColor="#7FFFD4" stopOpacity="0.22" />
               <stop offset="100%" stopColor="#3ECF8E" stopOpacity="0" />
             </radialGradient>
           </defs>
@@ -138,7 +138,7 @@ export const AuraLifeLogo: React.FC<AuraLifeLogoProps> = ({
           <span className="text-[#F1F3F5] tracking-tight group-hover:text-white transition-colors">
             Aura
           </span>
-          <span className="bg-gradient-to-r from-[#5B7FFF] via-[#4F94FF] to-[#3ECF8E] bg-clip-text text-transparent font-extrabold tracking-tight">
+          <span className="bg-gradient-to-r from-[#7FFFD4] via-[#4F94FF] to-[#3ECF8E] bg-clip-text text-transparent font-extrabold tracking-tight">
             Life
           </span>
         </div>

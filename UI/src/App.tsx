@@ -38,7 +38,7 @@ export default function App() {
   // Screen mode: 'hero', 'assistant_home', or 'workspace' (Three-Screen Experience)
   const [currentScreen, setCurrentScreen] = useState<'hero' | 'assistant_home' | 'workspace'>('hero');
   const [workspaceMode, setWorkspaceMode] = useState<'demo' | 'live'>('demo');
-  const [homeFeature, setHomeFeature] = useState<'home' | 'gemini_live' | 'transcript_select' | 'translate'>('home');
+  const [homeFeature, setHomeFeature] = useState<'home' | 'gemini_live' | 'translate'>('home');
 
   // Human Avatar Selection: Male or Female (Young professional mid-20s digital human)
   const [avatarGender, setAvatarGender] = useState<AvatarGender>('male');
@@ -49,7 +49,7 @@ export default function App() {
 
   // Session Mode & Status
   const [isLiveMic, setIsLiveMic] = useState(false);
-  const [isPlayingDemo, setIsPlayingDemo] = useState(true);
+  const [isPlayingDemo, setIsPlayingDemo] = useState(false);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   const [sessionTimeSeconds, setSessionTimeSeconds] = useState(14 * 60 + 2); // starts at 00:14:02
@@ -96,23 +96,40 @@ export default function App() {
     }
   }, [isLiveMic, voiceBridge.levels, voiceBridge.isBargeIn]);
 
-  // Sync Voice Bridge Transcripts
+  const processedAppTranscriptsCount = useRef(0);
+
+  // Sync Voice Bridge Transcripts & Translations
   useEffect(() => {
-    if (isLiveMic && voiceBridge.transcripts.length > 0) {
-      const latest = voiceBridge.transcripts[voiceBridge.transcripts.length - 1];
+    if (voiceBridge.transcripts.length > processedAppTranscriptsCount.current) {
+      const newTranscripts = voiceBridge.transcripts.slice(processedAppTranscriptsCount.current);
+      processedAppTranscriptsCount.current = voiceBridge.transcripts.length;
+      
       setTranscriptItems((prev) => {
-        const newItem: TranscriptItemData = {
-          id: `t-${Date.now()}`,
-          speakerId: latest.speaker === 'User' ? 'p-user' : 'p-ai',
-          speakerName: latest.speaker,
-          text: latest.text,
-          time: new Date().toLocaleTimeString([], { hour12: false }),
-          avatarUrl: 'https://i.pravatar.cc/150?u=a',
-        };
-        return [...prev, newItem];
+        const newItems: TranscriptItemData[] = newTranscripts.map((t, idx) => {
+          const isUser = t.speaker.toLowerCase().includes('user') || t.speaker.toLowerCase().includes('speaker');
+          return {
+            id: `t-${Date.now()}-${idx}`,
+            speaker: isUser ? 'You (Speaker)' : 'AuraLive AI',
+            text: t.text,
+            language: 'en',
+            translation: t.translation,
+            timestamp: new Date().toLocaleTimeString([], { hour12: false }),
+            isAI: !isUser,
+          };
+        });
+        
+        // Deduplicate exactly identical sequential messages (prevent edge cases)
+        const combined = [...prev];
+        for (const item of newItems) {
+          const last = combined[combined.length - 1];
+          if (!last || last.text.trim() !== item.text.trim()) {
+            combined.push(item);
+          }
+        }
+        return combined;
       });
     }
-  }, [isLiveMic, voiceBridge.transcripts]);
+  }, [voiceBridge.transcripts]);
 
   const isAiSpeaking = coreState === 'AI_SPEAKING';
   const isVoiceSpeaking = coreState === 'USER_SPEAKING';
@@ -328,8 +345,7 @@ export default function App() {
   const performLeaveWorkspace = () => {
     setIsLiveMic(false);
     setIsPlayingDemo(false);
-    // Return to Transcript selection (inside assistant_home) per Section 9 & 18
-    setHomeFeature('transcript_select');
+    setHomeFeature('home');
     setCurrentScreen('assistant_home');
   };
 
@@ -383,7 +399,7 @@ export default function App() {
             setIsPlayingDemo(false);
           } else {
             setIsLiveMic(false);
-            setIsPlayingDemo(true);
+            handleResetDemo();
           }
           setCurrentScreen('workspace');
         }}
@@ -397,11 +413,11 @@ export default function App() {
 
   // Get color for Core status indicator dot
   const getStatusDotColor = () => {
-    if (isVoiceSpeaking || coreState === 'USER_SPEAKING') return 'bg-[#3ECF8E]';
-    if (isAiSpeaking) return 'bg-[#5B7FFF]';
+    if (isVoiceSpeaking) return 'bg-[#3ECF8E]';
+    if (isAiSpeaking) return 'bg-[#7FFFD4]';
     if (coreState === 'AI_INTERRUPTED') return 'bg-[#EF4B52]';
     if (coreState === 'TRANSLATING') return 'bg-[#E3A54A]';
-    return 'bg-[#5B7FFF]';
+    return 'bg-[#7FFFD4]';
   };
 
   return (
@@ -437,9 +453,9 @@ export default function App() {
         }
         centerColumn={
           <div className="flex flex-col h-full overflow-hidden select-none">
-            {/* Upper-Middle Center Stage: Human Virtual Assistant Avatar with Real-time Speech Sync */}
+            {/* Upper-Middle Center Stage: Cute Robot Avatar with Real-time Speech Sync */}
             <div className="h-[48%] w-full flex flex-col items-center justify-center relative shrink-0">
-              {/* Male / Female Avatar Switcher (Minimal glassmorphism controls) */}
+              {/* Robot Persona Switcher */}
               <div className="absolute top-2 z-10">
                 <AvatarSwitcher
                   gender={avatarGender}
@@ -447,19 +463,19 @@ export default function App() {
                 />
               </div>
 
-              {/* Polished Modern Digital-Human Assistant (Male / Female mid-20s) */}
+              {/* Cute 3D Animated Robot Companion */}
               <HumanAvatar
                 gender={avatarGender}
-                isSpeaking={isVoiceSpeaking || (coreState === 'USER_SPEAKING' || isAiSpeaking)}
+                isSpeaking={isVoiceSpeaking || isAiSpeaking}
                 amplitude={smoothedAmplitude}
                 connectionState={coreState}
                 isAiSpeaking={isAiSpeaking}
-                isUserSpeaking={isVoiceSpeaking || coreState === 'USER_SPEAKING'}
+                isUserSpeaking={isVoiceSpeaking}
                 className="mt-6"
               />
 
               {/* Status Label directly underneath Avatar */}
-              <div className="absolute bottom-1 flex items-center gap-2 px-3 py-1 rounded-full bg-[#141619]/90 border border-[#26292F] text-xs font-medium text-[#EDEFF2] shadow-sm">
+              <div className="absolute bottom-1 flex items-center gap-2 px-3 py-1 rounded-full bg-[#050505]/90 border border-[#26292F] text-xs font-medium text-[#EDEFF2] shadow-sm">
                 <span className={`w-1.5 h-1.5 rounded-full ${getStatusDotColor()} animate-pulse`} />
                 <span>{avatarStatusLabel}</span>
               </div>

@@ -23,10 +23,10 @@ export const EventInline: React.FC<EventInlineProps> = ({ type, title, detail })
     },
     task: {
       tag: 'TASK DETECTED',
-      tagColor: 'text-[#5B7FFF]',
-      border: 'border-[#5B7FFF]/25',
-      bg: 'bg-[#5B7FFF]/5',
-      icon: <ListTodo className="w-3.5 h-3.5 text-[#5B7FFF]" />,
+      tagColor: 'text-[#7FFFD4]',
+      border: 'border-[#7FFFD4]/25',
+      bg: 'bg-[#7FFFD4]/5',
+      icon: <ListTodo className="w-3.5 h-3.5 text-[#7FFFD4]" />,
     },
     question: {
       tag: 'QUESTION DETECTED',

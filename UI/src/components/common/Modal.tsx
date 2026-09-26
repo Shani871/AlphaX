@@ -47,7 +47,7 @@ export const Modal: React.FC<ModalProps> = ({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
             onClick={onClose}
-            className="fixed inset-0 bg-[#0B0C0E]/80 backdrop-blur-sm"
+            className="fixed inset-0 bg-[#000000]/80 backdrop-blur-sm"
           />
 
           {/* Modal Container */}
@@ -56,7 +56,7 @@ export const Modal: React.FC<ModalProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 8 }}
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className={`relative w-full ${maxWidth} bg-[#141619] border border-[#26292F] rounded-xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden z-10`}
+            className={`relative w-full ${maxWidth} bg-[#050505] border border-[#26292F] rounded-xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden z-10`}
           >
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-[#26292F]">
@@ -69,7 +69,7 @@ export const Modal: React.FC<ModalProps> = ({
               <button
                 onClick={onClose}
                 aria-label="Close dialog"
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-[#A3AAB5] hover:text-[#EDEFF2] hover:bg-[#1C1F24] transition-colors cursor-pointer"
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-[#A3AAB5] hover:text-[#EDEFF2] hover:bg-[#0A0A0A] transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -82,7 +82,7 @@ export const Modal: React.FC<ModalProps> = ({
 
             {/* Footer */}
             {footer && (
-              <div className="px-5 py-3.5 border-t border-[#26292F] bg-[#141619] flex items-center justify-end gap-2.5">
+              <div className="px-5 py-3.5 border-t border-[#26292F] bg-[#050505] flex items-center justify-end gap-2.5">
                 {footer}
               </div>
             )}

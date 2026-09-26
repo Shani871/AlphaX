@@ -76,8 +76,8 @@ export const AuraCore: React.FC<AuraCoreProps> = ({
 
   // Fallback if WebGL fails
   const renderFallback = (
-    <div className="w-full h-full flex flex-col items-center justify-center bg-[#0B0C0E]">
-      <div className="w-24 h-24 rounded-full border border-[#5B7FFF]/40 animate-pulse bg-[#5B7FFF]/10" />
+    <div className="w-full h-full flex flex-col items-center justify-center bg-[#000000]">
+      <div className="w-24 h-24 rounded-full border border-[#7FFFD4]/40 animate-pulse bg-[#7FFFD4]/10" />
     </div>
   );
 
@@ -99,7 +99,7 @@ export const AuraCore: React.FC<AuraCoreProps> = ({
           }}
           className="w-full h-full cursor-grab active:cursor-grabbing"
         >
-          <color attach="background" args={['#0B0C0E']} />
+          <color attach="background" args={['#000000']} />
           <ambientLight intensity={0.2} />
 
           <Suspense fallback={null}>

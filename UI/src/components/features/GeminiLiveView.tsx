@@ -63,18 +63,21 @@ export const GeminiLiveView: React.FC<GeminiLiveViewProps> = ({ onBackToHome }) 
     }
   }, [levels, isBargeIn]);
 
+  const processedTranscriptsCount = useRef(0);
+
   useEffect(() => {
-    if (transcripts.length > 0) {
-      const latest = transcripts[transcripts.length - 1];
-      setMessages(prev => [
-        ...prev,
-        {
-          id: `t-${Date.now()}`,
-          sender: latest.speaker === 'User' ? 'user' : 'ai',
-          text: latest.text,
-          timestamp: 'Now'
-        }
-      ]);
+    if (transcripts.length > processedTranscriptsCount.current) {
+      const newTranscripts = transcripts.slice(processedTranscriptsCount.current);
+      processedTranscriptsCount.current = transcripts.length;
+      
+      const newMessages = newTranscripts.map((t, idx) => ({
+        id: `t-${Date.now()}-${idx}`,
+        sender: (t.speaker.toLowerCase().includes('user') || t.speaker.toLowerCase().includes('speaker')) ? 'user' : 'ai',
+        text: t.text,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      }));
+
+      setMessages(prev => [...prev, ...newMessages as Message[]]);
     }
   }, [transcripts]);
 
@@ -137,7 +140,7 @@ export const GeminiLiveView: React.FC<GeminiLiveViewProps> = ({ onBackToHome }) 
       case 'USER_SPEAKING':
         return { label: 'User Speaking', dot: 'bg-[#3ECF8E] animate-pulse', text: 'text-[#3ECF8E]' };
       case 'AI_SPEAKING':
-        return { label: 'AI Speaking', dot: 'bg-[#5B7FFF] animate-pulse', text: 'text-[#5B7FFF]' };
+        return { label: 'AI Speaking', dot: 'bg-[#7FFFD4] animate-pulse', text: 'text-[#7FFFD4]' };
       case 'AI_INTERRUPTED':
         return { label: 'Interrupted', dot: 'bg-[#EF4B52]', text: 'text-[#EF4B52]' };
       case 'TRANSLATING':
@@ -145,21 +148,21 @@ export const GeminiLiveView: React.FC<GeminiLiveViewProps> = ({ onBackToHome }) 
       case 'IDLE':
         return { label: 'Paused', dot: 'bg-[#5F6773]', text: 'text-[#5F6773]' };
       default:
-        return { label: 'Listening', dot: 'bg-[#5B7FFF]', text: 'text-[#5B7FFF]' };
+        return { label: 'Listening', dot: 'bg-[#7FFFD4]', text: 'text-[#7FFFD4]' };
     }
   };
 
   const badge = getStateBadge();
 
   return (
-    <div className="flex flex-col h-full w-full bg-[#0B0C0E] text-[#EDEFF2] select-none">
+    <div className="flex flex-col h-full w-full bg-[#000000] text-[#EDEFF2] select-none">
       {/* Top Header bar with persistent Back navigation */}
       <div className="h-14 border-b border-[#26292F] px-4 sm:px-6 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">
           {/* Back button */}
           <button
             onClick={handleBackRequest}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-[#A3AAB5] hover:text-[#EDEFF2] hover:bg-[#1C1F24] transition-all cursor-pointer"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-[#A3AAB5] hover:text-[#EDEFF2] hover:bg-[#0A0A0A] transition-all cursor-pointer"
             title="Back to AuraLife AI Home"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
@@ -169,7 +172,7 @@ export const GeminiLiveView: React.FC<GeminiLiveViewProps> = ({ onBackToHome }) 
           <span className="text-[#26292F]">|</span>
 
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-[#5B7FFF]" />
+            <span className="w-2 h-2 rounded-full bg-[#7FFFD4]" />
             <span className="text-xs font-bold uppercase tracking-wider text-[#EDEFF2]">
               Gemini Live · 1-on-1 Voice
             </span>
@@ -177,7 +180,7 @@ export const GeminiLiveView: React.FC<GeminiLiveViewProps> = ({ onBackToHome }) 
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#141619] border border-[#26292F] text-xs font-medium">
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#050505] border border-[#26292F] text-xs font-medium">
             <span className={`w-1.5 h-1.5 rounded-full ${badge.dot}`} />
             <span className={badge.text}>{badge.label}</span>
           </div>
@@ -231,8 +234,8 @@ export const GeminiLiveView: React.FC<GeminiLiveViewProps> = ({ onBackToHome }) 
               <div
                 className={`max-w-[85%] px-3.5 py-2 rounded-xl text-xs leading-relaxed ${
                   m.sender === 'user'
-                    ? 'bg-[#5B7FFF] text-[#0B0C0E] font-medium rounded-tr-none'
-                    : 'bg-[#141619] border border-[#26292F] text-[#EDEFF2] rounded-tl-none'
+                    ? 'bg-[#7FFFD4] text-[#000000] font-medium rounded-tr-none'
+                    : 'bg-[#050505] border border-[#26292F] text-[#EDEFF2] rounded-tl-none'
                 }`}
               >
                 {m.text}
@@ -249,8 +252,8 @@ export const GeminiLiveView: React.FC<GeminiLiveViewProps> = ({ onBackToHome }) 
               onClick={toggleMic}
               className={`w-14 h-14 rounded-full flex items-center justify-center transition-all shadow-lg cursor-pointer ${
                 isMicActive
-                  ? 'bg-[#5B7FFF] hover:bg-[#7292FF] text-[#0B0C0E] ring-4 ring-[#5B7FFF]/20 scale-105'
-                  : 'bg-[#1C1F24] hover:bg-[#26292F] text-[#EF4B52] border border-[#26292F]'
+                  ? 'bg-[#7FFFD4] hover:bg-[#7292FF] text-[#000000] ring-4 ring-[#7FFFD4]/20 scale-105'
+                  : 'bg-[#0A0A0A] hover:bg-[#26292F] text-[#EF4B52] border border-[#26292F]'
               }`}
               title={isMicActive ? 'Mute Mic' : 'Unmute Mic'}
             >
@@ -263,7 +266,7 @@ export const GeminiLiveView: React.FC<GeminiLiveViewProps> = ({ onBackToHome }) 
               e.preventDefault();
               handleSendMessage();
             }}
-            className="flex items-center gap-2 bg-[#141619] border border-[#26292F] rounded-xl px-3 py-1.5 focus-within:border-[#5B7FFF]/50"
+            className="flex items-center gap-2 bg-[#050505] border border-[#26292F] rounded-xl px-3 py-1.5 focus-within:border-[#7FFFD4]/50"
           >
             <input
               type="text"
@@ -275,7 +278,7 @@ export const GeminiLiveView: React.FC<GeminiLiveViewProps> = ({ onBackToHome }) 
             <button
               type="submit"
               disabled={!inputText.trim()}
-              className="p-1.5 rounded-lg bg-[#5B7FFF] disabled:opacity-30 text-[#0B0C0E] transition-all cursor-pointer disabled:cursor-not-allowed"
+              className="p-1.5 rounded-lg bg-[#7FFFD4] disabled:opacity-30 text-[#000000] transition-all cursor-pointer disabled:cursor-not-allowed"
             >
               <Send className="w-3.5 h-3.5" />
             </button>

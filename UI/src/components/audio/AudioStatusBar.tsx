@@ -53,11 +53,11 @@ export const AudioStatusBar: React.FC<AudioStatusBarProps> = ({
     if (status === 'error') return 'bg-[#EF4B52]';
     if (status === 'speaking') return 'bg-[#3ECF8E]';
     if (isMuted) return 'bg-[#5F6773]';
-    return 'bg-[#5B7FFF]';
+    return 'bg-[#7FFFD4]';
   };
 
   return (
-    <footer className="fixed bottom-0 left-0 right-0 h-20 bg-[#0B0C0E]/95 backdrop-blur-md border-t border-[#26292F] px-6 lg:px-8 flex items-center justify-between z-30 select-none pb-[env(safe-area-inset-bottom)]">
+    <footer className="fixed bottom-0 left-0 right-0 h-20 bg-[#000000]/95 backdrop-blur-md border-t border-[#26292F] px-6 lg:px-8 flex items-center justify-between z-30 select-none pb-[env(safe-area-inset-bottom)]">
       {/* Left: ● State Indicator */}
       <div className="flex items-center gap-3 min-w-[160px]">
         <span
@@ -68,7 +68,7 @@ export const AudioStatusBar: React.FC<AudioStatusBarProps> = ({
               ? 'bg-[#3ECF8E] animate-pulse'
               : isMuted
               ? 'bg-[#5F6773]'
-              : 'bg-[#5B7FFF]'
+              : 'bg-[#7FFFD4]'
           }`}
         />
         <span className="text-xs font-semibold text-[#A3AAB5]">
@@ -122,8 +122,8 @@ export const AudioStatusBar: React.FC<AudioStatusBarProps> = ({
           size="md"
           variant="secondary"
           onClick={onCatchMeUp}
-          icon={<Sparkles className="w-3.5 h-3.5 text-[#5B7FFF]" />}
-          className="border-[#26292F] hover:border-[#5B7FFF]/40 text-[#EDEFF2] text-xs"
+          icon={<Sparkles className="w-3.5 h-3.5 text-[#7FFFD4]" />}
+          className="border-[#26292F] hover:border-[#7FFFD4]/40 text-[#EDEFF2] text-xs"
         >
           Catch Up
         </Button>

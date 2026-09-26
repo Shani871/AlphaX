@@ -116,13 +116,13 @@ export const HumanAvatar: React.FC<HumanAvatarProps> = ({
       />
 
       {/* Futuristic Glass Container */}
-      <div className="relative w-64 h-64 sm:w-72 sm:h-72 rounded-full overflow-hidden border border-[#26292F]/80 bg-gradient-to-b from-[#141619] via-[#0D0E12] to-[#07080A] shadow-[0_12px_48px_rgba(0,0,0,0.8)] flex items-center justify-center">
+      <div className="relative w-64 h-64 sm:w-72 sm:h-72 rounded-full overflow-hidden border border-[#26292F]/80 bg-gradient-to-b from-[#050505] via-[#0D0E12] to-[#07080A] shadow-[0_12px_48px_rgba(0,0,0,0.8)] flex items-center justify-center">
         {/* Subtle futuristic cyan circular grid backdrop */}
         <div
           className="absolute inset-0 opacity-15 pointer-events-none"
           style={{
             backgroundImage:
-              'radial-gradient(circle at center, #5B7FFF 1px, transparent 1px), linear-gradient(to right, #26292F 1px, transparent 1px)',
+              'radial-gradient(circle at center, #7FFFD4 1px, transparent 1px), linear-gradient(to right, #26292F 1px, transparent 1px)',
             backgroundSize: '24px 24px, 100% 100%',
           }}
         />
@@ -160,10 +160,10 @@ export const HumanAvatar: React.FC<HumanAvatarProps> = ({
 
               {/* Cyan Rim Lighting */}
               <linearGradient id="cyanRim" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#5B7FFF" stopOpacity="0.8" />
+                <stop offset="0%" stopColor="#7FFFD4" stopOpacity="0.8" />
                 <stop offset="15%" stopColor="#3ECF8E" stopOpacity="0.4" />
                 <stop offset="85%" stopColor="transparent" />
-                <stop offset="100%" stopColor="#5B7FFF" stopOpacity="0.6" />
+                <stop offset="100%" stopColor="#7FFFD4" stopOpacity="0.6" />
               </linearGradient>
 
               {/* Jacket / Suit Gradient */}
@@ -204,7 +204,7 @@ export const HumanAvatar: React.FC<HumanAvatarProps> = ({
                 y1="230"
                 x2="140"
                 y2="275"
-                stroke={isSpeaking ? '#5B7FFF' : '#323742'}
+                stroke={isSpeaking ? '#7FFFD4' : '#323742'}
                 strokeWidth="2"
                 strokeLinecap="round"
                 opacity={isSpeaking ? 0.9 : 0.4}
@@ -255,8 +255,8 @@ export const HumanAvatar: React.FC<HumanAvatarProps> = ({
                 fill={gender === 'male' ? '#C99372' : '#D0A285'}
               />
               {/* Virtual Assistant Earbud / Audio Sensor */}
-              <circle cx="85" cy="135" r="3.5" fill="#1C1F24" stroke="#5B7FFF" strokeWidth="1" />
-              <circle cx="195" cy="135" r="3.5" fill="#1C1F24" stroke="#5B7FFF" strokeWidth="1" />
+              <circle cx="85" cy="135" r="3.5" fill="#0A0A0A" stroke="#7FFFD4" strokeWidth="1" />
+              <circle cx="195" cy="135" r="3.5" fill="#0A0A0A" stroke="#7FFFD4" strokeWidth="1" />
             </g>
 
             {/* Hairstyles (Natural, modern, professional digital assistant) */}
@@ -356,14 +356,14 @@ export const HumanAvatar: React.FC<HumanAvatarProps> = ({
                     cx="116.5"
                     cy="125.5"
                     r="0.8"
-                    fill="#5B7FFF"
+                    fill="#7FFFD4"
                     opacity={isSpeaking ? 0.9 : 0.4}
                   />
                   <circle
                     cx="166.5"
                     cy="125.5"
                     r="0.8"
-                    fill="#5B7FFF"
+                    fill="#7FFFD4"
                     opacity={isSpeaking ? 0.9 : 0.4}
                   />
 

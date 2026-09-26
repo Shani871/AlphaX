@@ -135,9 +135,9 @@ export const SessionSummary: React.FC<SessionSummaryProps> = ({
     >
       {/* Metrics Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-        <div className="p-3 rounded-lg bg-[#1C1F24] border border-[#26292F]">
+        <div className="p-3 rounded-lg bg-[#0A0A0A] border border-[#26292F]">
           <span className="text-[11px] text-[#A3AAB5] flex items-center gap-1.5 mb-1">
-            <Clock className="w-3.5 h-3.5 text-[#5B7FFF]" />
+            <Clock className="w-3.5 h-3.5 text-[#7FFFD4]" />
             Duration
           </span>
           <span className="text-base font-bold font-mono text-[#EDEFF2] tabular-nums">
@@ -145,7 +145,7 @@ export const SessionSummary: React.FC<SessionSummaryProps> = ({
           </span>
         </div>
 
-        <div className="p-3 rounded-lg bg-[#1C1F24] border border-[#26292F]">
+        <div className="p-3 rounded-lg bg-[#0A0A0A] border border-[#26292F]">
           <span className="text-[11px] text-[#A3AAB5] flex items-center gap-1.5 mb-1">
             <Users className="w-3.5 h-3.5 text-[#3ECF8E]" />
             Speakers
@@ -155,7 +155,7 @@ export const SessionSummary: React.FC<SessionSummaryProps> = ({
           </span>
         </div>
 
-        <div className="p-3 rounded-lg bg-[#1C1F24] border border-[#26292F]">
+        <div className="p-3 rounded-lg bg-[#0A0A0A] border border-[#26292F]">
           <span className="text-[11px] text-[#A3AAB5] flex items-center gap-1.5 mb-1">
             <Globe2 className="w-3.5 h-3.5 text-[#E3A54A]" />
             Languages
@@ -165,7 +165,7 @@ export const SessionSummary: React.FC<SessionSummaryProps> = ({
           </span>
         </div>
 
-        <div className="p-3 rounded-lg bg-[#1C1F24] border border-[#26292F]">
+        <div className="p-3 rounded-lg bg-[#0A0A0A] border border-[#26292F]">
           <span className="text-[11px] text-[#A3AAB5] flex items-center gap-1.5 mb-1">
             <CheckCircle2 className="w-3.5 h-3.5 text-[#3ECF8E]" />
             Decisions
@@ -178,8 +178,8 @@ export const SessionSummary: React.FC<SessionSummaryProps> = ({
 
       {/* Intelligence Counts Grid */}
       <div className="grid grid-cols-2 gap-2.5">
-        <div className="p-3 rounded-lg bg-[#1C1F24] border border-[#5B7FFF]/20">
-          <span className="text-[11px] text-[#5B7FFF] font-bold flex items-center gap-1.5 mb-1">
+        <div className="p-3 rounded-lg bg-[#0A0A0A] border border-[#7FFFD4]/20">
+          <span className="text-[11px] text-[#7FFFD4] font-bold flex items-center gap-1.5 mb-1">
             <ListTodo className="w-3.5 h-3.5" />
             Action Items Logged
           </span>
@@ -188,7 +188,7 @@ export const SessionSummary: React.FC<SessionSummaryProps> = ({
           </span>
         </div>
 
-        <div className="p-3 rounded-lg bg-[#1C1F24] border border-[#E3A54A]/20">
+        <div className="p-3 rounded-lg bg-[#0A0A0A] border border-[#E3A54A]/20">
           <span className="text-[11px] text-[#E3A54A] font-bold flex items-center gap-1.5 mb-1">
             <HelpCircle className="w-3.5 h-3.5" />
             Questions Captured

@@ -20,15 +20,15 @@ export const MicButton: React.FC<MicButtonProps> = ({
   const getStyles = () => {
     switch (status) {
       case 'speaking':
-        return 'bg-[#3ECF8E] text-[#0B0C0E] shadow-[0_0_20px_rgba(62,207,142,0.35)] ring-4 ring-[#3ECF8E]/20 scale-105';
+        return 'bg-[#3ECF8E] text-[#000000] shadow-[0_0_20px_rgba(62,207,142,0.35)] ring-4 ring-[#3ECF8E]/20 scale-105';
       case 'listening':
-        return 'bg-[#5B7FFF] text-[#0B0C0E] shadow-[0_0_16px_rgba(91,127,255,0.3)] hover:bg-[#7292FF] active:scale-95';
+        return 'bg-[#7FFFD4] text-[#000000] shadow-[0_0_16px_rgba(91,127,255,0.3)] hover:bg-[#7292FF] active:scale-95';
       case 'muted':
-        return 'bg-[#1C1F24] text-[#A3AAB5] border border-[#26292F] hover:text-[#EDEFF2] hover:border-[#383C44]';
+        return 'bg-[#0A0A0A] text-[#A3AAB5] border border-[#26292F] hover:text-[#EDEFF2] hover:border-[#383C44]';
       case 'error':
-        return 'bg-[#EF4B52] text-[#0B0C0E] shadow-[0_0_16px_rgba(239,75,82,0.4)]';
+        return 'bg-[#EF4B52] text-[#000000] shadow-[0_0_16px_rgba(239,75,82,0.4)]';
       default:
-        return 'bg-[#1C1F24] text-[#EDEFF2]';
+        return 'bg-[#0A0A0A] text-[#EDEFF2]';
     }
   };
 
@@ -59,7 +59,7 @@ export const MicButton: React.FC<MicButtonProps> = ({
       {(status === 'speaking' || status === 'listening') && (
         <span
           className={`absolute inset-0 rounded-full animate-ping opacity-25 pointer-events-none ${
-            status === 'speaking' ? 'bg-[#3ECF8E]' : 'bg-[#5B7FFF]'
+            status === 'speaking' ? 'bg-[#3ECF8E]' : 'bg-[#7FFFD4]'
           }`}
           style={{ animationDuration: '2s' }}
         />

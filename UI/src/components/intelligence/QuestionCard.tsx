@@ -84,7 +84,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                     value={resolutionInput}
                     onChange={(e) => setResolutionInput(e.target.value)}
                     placeholder="Enter answer / resolution notes..."
-                    className="w-full px-2.5 py-1 text-xs bg-[#141619] border border-[#26292F] rounded text-[#EDEFF2] focus:border-[#3ECF8E] focus:outline-none"
+                    className="w-full px-2.5 py-1 text-xs bg-[#050505] border border-[#26292F] rounded text-[#EDEFF2] focus:border-[#3ECF8E] focus:outline-none"
                     autoFocus
                   />
                   <div className="flex items-center justify-end gap-1.5">

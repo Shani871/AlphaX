@@ -21,7 +21,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
   const configs = {
     live: { dot: 'bg-[#EF4B52] animate-pulse', text: 'text-[#EF4B52]', defaultLabel: 'LIVE' },
     speaking: { dot: 'bg-[#3ECF8E] animate-pulse', text: 'text-[#3ECF8E]', defaultLabel: 'Speaking' },
-    listening: { dot: 'bg-[#5B7FFF]', text: 'text-[#5B7FFF]', defaultLabel: 'Listening' },
+    listening: { dot: 'bg-[#7FFFD4]', text: 'text-[#7FFFD4]', defaultLabel: 'Listening' },
     translating: { dot: 'bg-[#E3A54A] animate-pulse', text: 'text-[#E3A54A]', defaultLabel: 'Translating' },
     interrupted: { dot: 'bg-[#EF4B52]', text: 'text-[#EF4B52]', defaultLabel: 'Interrupted' },
     confirmed: { dot: 'bg-[#3ECF8E]', text: 'text-[#3ECF8E]', defaultLabel: 'Confirmed' },

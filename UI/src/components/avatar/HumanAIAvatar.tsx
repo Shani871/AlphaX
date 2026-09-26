@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, useState, useMemo } from 'react';
-import avatarPhoto from '../../assets/images/auralife_avatar_1790412394267.jpg';
+import avatarPhoto from '../../assets/images/cute_robot_avatar.jpg';
 
 export type AvatarState = 'idle' | 'listening' | 'thinking' | 'speaking';
 
@@ -141,10 +141,10 @@ export const HumanAIAvatar: React.FC<HumanAIAvatarProps> = ({
           />
 
           {/* 4 Cardinal Axis Accent Markers */}
-          <line x1="200" y1="0" x2="200" y2="10" stroke="#5B7FFF" strokeWidth="2" opacity="0.6" />
-          <line x1="200" y1="390" x2="200" y2="400" stroke="#5B7FFF" strokeWidth="2" opacity="0.6" />
-          <line x1="0" y1="200" x2="10" y2="200" stroke="#5B7FFF" strokeWidth="2" opacity="0.6" />
-          <line x1="390" y1="200" x2="400" y2="200" stroke="#5B7FFF" strokeWidth="2" opacity="0.6" />
+          <line x1="200" y1="0" x2="200" y2="10" stroke="#7FFFD4" strokeWidth="2" opacity="0.6" />
+          <line x1="200" y1="390" x2="200" y2="400" stroke="#7FFFD4" strokeWidth="2" opacity="0.6" />
+          <line x1="0" y1="200" x2="10" y2="200" stroke="#7FFFD4" strokeWidth="2" opacity="0.6" />
+          <line x1="390" y1="200" x2="400" y2="200" stroke="#7FFFD4" strokeWidth="2" opacity="0.6" />
 
           {/* Active Accent Corner Brackets */}
           <path
@@ -158,7 +158,7 @@ export const HumanAIAvatar: React.FC<HumanAIAvatarProps> = ({
           <path
             d="M 300 20 A 196 196 0 0 1 340 40"
             fill="none"
-            stroke="#5B7FFF"
+            stroke="#7FFFD4"
             strokeWidth="2.5"
             strokeLinecap="round"
             opacity={isSpeaking ? '0.9' : '0.2'}
@@ -209,10 +209,10 @@ export const HumanAIAvatar: React.FC<HumanAIAvatarProps> = ({
 
         {/* Minimal AI Status Badge on lower circular rim */}
         {(isListening || isSpeaking || isThinking) && (
-          <div className="absolute bottom-4 z-20 px-3 py-0.5 rounded-full bg-[#0B0C0E]/85 backdrop-blur-md border border-[#26292F] flex items-center gap-1.5 shadow-md">
+          <div className="absolute bottom-4 z-20 px-3 py-0.5 rounded-full bg-[#000000]/85 backdrop-blur-md border border-[#26292F] flex items-center gap-1.5 shadow-md">
             <span
               className={`w-1.5 h-1.5 rounded-full ${
-                isListening ? 'bg-[#3ECF8E]' : isSpeaking ? 'bg-[#5B7FFF]' : 'bg-[#E3A54A]'
+                isListening ? 'bg-[#3ECF8E]' : isSpeaking ? 'bg-[#7FFFD4]' : 'bg-[#E3A54A]'
               } animate-pulse`}
             />
             <span className="text-[10px] font-semibold tracking-wider uppercase text-[#EDEFF2]">

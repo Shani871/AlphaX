@@ -21,37 +21,37 @@ validate_api_key()
 
 from engine.audio_io import AudioHardwareManager
 from engine.gemini_live import GeminiLiveBridge
-from engine.transcribe_translate import TranscribeEngine, LiveTranslateEngine
+from engine.transcribe_translate import LiveTranslateEngine
 from engine.ui_bridge import ui_bridge
 
 async def main():
-    print("Initializing AURALIVE Engine...")
+    print("=" * 60)
+    print("🚀 Initializing AuraLive AI Engine...")
     print("[VOICE PERSONA] Active: Aoede (Tactical Natural Female)")
     print("[BUFFER ENGINE] 24kHz / 512-block Jitter-Resilient Stream")
     print("[AEC / GATE] 80Hz High-Pass & Dynamic RMS Active")
+    print("[AI SERVICES] Gemini Live Duplex + Live Translation")
+    print("=" * 60)
     try:
         audio_manager = AudioHardwareManager()
         live_bridge = GeminiLiveBridge(audio_manager)
-        transcribe_engine = TranscribeEngine(audio_manager)
         translate_engine = LiveTranslateEngine(audio_manager)
         
         ui_bridge.set_audio_manager(audio_manager)
         ui_task = asyncio.create_task(ui_bridge.start_server())
 
-        # Start hardware capture
+        # Start hardware audio capture and playback streams
         await audio_manager.start_capture()
         
-        # Connect to Gemini services
+        # Connect to concurrent AuraLive AI services
         live_task = asyncio.create_task(live_bridge.connect_and_run())
-        transcribe_task = asyncio.create_task(transcribe_engine.connect_and_run())
         translate_task = asyncio.create_task(translate_engine.connect_and_run())
         
-        print("All engine components online. Listening for audio...")
+        print("\n✨ All AuraLive AI engine components online. Listening for voice audio...")
         
         await asyncio.gather(
             ui_task,
             live_task,
-            transcribe_task,
             translate_task
         )
     except asyncio.CancelledError:
@@ -66,7 +66,7 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        print("\nGracefully shutting down AURALIVE Engine on Ctrl+C...")
+        print("\nGracefully shutting down AuraLive AI Engine on Ctrl+C...")
         sys.exit(0)
     except Exception as e:
         traceback.print_exc()

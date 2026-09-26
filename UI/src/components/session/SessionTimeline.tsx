@@ -17,7 +17,7 @@ export const SessionTimeline: React.FC<SessionTimelineProps> = ({ events }) => {
       case 'decision':
         return <CheckCircle2 className="w-3.5 h-3.5 text-[#3ECF8E]" />;
       case 'task':
-        return <ListTodo className="w-3.5 h-3.5 text-[#5B7FFF]" />;
+        return <ListTodo className="w-3.5 h-3.5 text-[#7FFFD4]" />;
       case 'question':
         return <HelpCircle className="w-3.5 h-3.5 text-[#E3A54A]" />;
       case 'interruption':
@@ -32,7 +32,7 @@ export const SessionTimeline: React.FC<SessionTimelineProps> = ({ events }) => {
       {events.map((ev, idx) => (
         <div key={idx} className="relative flex items-start gap-3 text-xs">
           {/* Timeline node */}
-          <div className="absolute -left-6 top-0.5 w-4 h-4 rounded-full bg-[#141619] border border-[#26292F] flex items-center justify-center">
+          <div className="absolute -left-6 top-0.5 w-4 h-4 rounded-full bg-[#050505] border border-[#26292F] flex items-center justify-center">
             {getIcon(ev.type)}
           </div>
 

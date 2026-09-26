@@ -29,11 +29,11 @@ export const Button: React.FC<ButtonProps> = ({
 
   const variantClasses = {
     primary:
-      'bg-[#5B7FFF] text-[#0B0C0E] hover:bg-[#7292FF] active:bg-[#4E6EE6] font-semibold shadow-sm transition-all',
+      'bg-[#7FFFD4] text-[#000000] hover:bg-[#7292FF] active:bg-[#4E6EE6] font-semibold shadow-sm transition-all',
     secondary:
-      'bg-[#1C1F24] hover:bg-[#26292F] active:bg-[#141619] text-[#EDEFF2] border border-[#26292F] hover:border-[#383C44] transition-all',
+      'bg-[#0A0A0A] hover:bg-[#26292F] active:bg-[#050505] text-[#EDEFF2] border border-[#26292F] hover:border-[#383C44] transition-all',
     ghost:
-      'bg-transparent hover:bg-[#1C1F24] active:bg-[#141619] text-[#A3AAB5] hover:text-[#EDEFF2] transition-colors',
+      'bg-transparent hover:bg-[#0A0A0A] active:bg-[#050505] text-[#A3AAB5] hover:text-[#EDEFF2] transition-colors',
     danger:
       'bg-[#EF4B52]/15 text-[#EF4B52] border border-[#EF4B52]/30 hover:bg-[#EF4B52]/25 active:bg-[#EF4B52]/35 transition-all',
     success:
@@ -44,7 +44,7 @@ export const Button: React.FC<ButtonProps> = ({
 
   return (
     <button
-      className={`inline-flex items-center justify-center whitespace-nowrap select-none font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#5B7FFF] ${sizeClasses} ${variantClasses} ${disabledClass} ${className}`}
+      className={`inline-flex items-center justify-center whitespace-nowrap select-none font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#7FFFD4] ${sizeClasses} ${variantClasses} ${disabledClass} ${className}`}
       disabled={disabled}
       {...props}
     >

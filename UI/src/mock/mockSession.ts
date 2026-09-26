@@ -85,14 +85,15 @@ export interface ScriptStep {
 
 // Neutral speaker labels (Speaker 1, Speaker 2, Speaker 3) per user request Section 12
 export const INITIAL_PARTICIPANTS: Participant[] = [
-  { id: 'speaker-1', name: 'Speaker 1', role: 'Team Lead', isSpeaking: false, language: 'English', color: '#5B7FFF' },
+  { id: 'speaker-1', name: 'Speaker 1', role: 'Team Lead', isSpeaking: false, language: 'English', color: '#7FFFD4' },
   { id: 'speaker-2', name: 'Speaker 2', role: 'Engineering', isSpeaking: false, language: 'Hindi / English', color: '#3ECF8E' },
-  { id: 'speaker-3', name: 'Speaker 3', role: 'Operations', isSpeaking: false, language: 'English', color: '#E3A54A' },
+  { id: 'speaker-3', name: 'Speaker 3', role: 'Operations', isSpeaking: false, language: 'Telugu', color: '#E3A54A' },
 ];
 
 export const INITIAL_LANGUAGES = [
-  { code: 'en', name: 'English (US)', flag: '🇺🇸', speakerCount: 3, percent: 74 },
-  { code: 'hi', name: 'Hindi', flag: '🇮🇳', speakerCount: 1, percent: 26 },
+  { code: 'en', name: 'English (US)', flag: '🇺🇸', speakerCount: 1, percent: 50 },
+  { code: 'hi', name: 'Hindi', flag: '🇮🇳', speakerCount: 1, percent: 25 },
+  { code: 'te', name: 'Telugu', flag: '🇮🇳', speakerCount: 1, percent: 25 },
 ];
 
 export const MOCK_SCRIPT_STEPS: ScriptStep[] = [
@@ -289,8 +290,9 @@ export const MOCK_SCRIPT_STEPS: ScriptStep[] = [
     newTranscript: {
       id: 't-9',
       speaker: 'Speaker 3',
-      text: "I took a full snapshot of staging this morning at 9 AM, so the replica is already covered.",
-      language: 'en',
+      text: "నేను ఈ ఉదయం 9 గంటలకు స్టేజింగ్ పూర్తి స్నాప్‌షాట్ తీసుకున్నాను, కాబట్టి ప్రతిరూపం సురక్షితం.",
+      language: 'te',
+      translation: "I took a full snapshot of staging this morning at 9 AM, so the replica is already covered.",
       timestamp: '10:42:51',
       inlineEvent: {
         type: 'decision',
@@ -316,8 +318,9 @@ export const MOCK_SCRIPT_STEPS: ScriptStep[] = [
     newTranscript: {
       id: 't-10',
       speaker: 'Speaker 3',
-      text: "Who is on point for the performance benchmark testing once the migration completes?",
-      language: 'en',
+      text: "మైగ్రేషన్ పూర్తయిన తర్వాత పనితీరు బెంచ్‌మార్క్ పరీక్షకు ఎవరు బాధ్యత వహిస్తారు?",
+      language: 'te',
+      translation: "Who is on point for the performance benchmark testing once the migration completes?",
       timestamp: '10:42:58',
       inlineEvent: {
         type: 'question',

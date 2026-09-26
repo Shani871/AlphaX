@@ -53,7 +53,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
         );
       case 'edited':
         return (
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#5B7FFF] bg-[#5B7FFF]/10 px-1.5 py-0.5 rounded">
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#7FFFD4] bg-[#7FFFD4]/10 px-1.5 py-0.5 rounded">
             Edited
           </span>
         );
@@ -76,16 +76,16 @@ export const TaskCard: React.FC<TaskCardProps> = ({
     return (
       <form
         onSubmit={handleSaveEdit}
-        className="p-3 rounded-lg border border-[#5B7FFF]/40 bg-[#1C1F24] space-y-2.5"
+        className="p-3 rounded-lg border border-[#7FFFD4]/40 bg-[#0A0A0A] space-y-2.5"
       >
-        <span className="text-[11px] font-bold text-[#5B7FFF] uppercase tracking-wider block">
+        <span className="text-[11px] font-bold text-[#7FFFD4] uppercase tracking-wider block">
           Edit Task
         </span>
         <input
           type="text"
           value={editTitle}
           onChange={(e) => setEditTitle(e.target.value)}
-          className="w-full px-2.5 py-1 text-xs bg-[#141619] border border-[#26292F] rounded text-[#EDEFF2] focus:border-[#5B7FFF] focus:outline-none"
+          className="w-full px-2.5 py-1 text-xs bg-[#050505] border border-[#26292F] rounded text-[#EDEFF2] focus:border-[#7FFFD4] focus:outline-none"
           placeholder="Task title"
           required
         />
@@ -94,7 +94,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
             type="text"
             value={editOwner}
             onChange={(e) => setEditOwner(e.target.value)}
-            className="px-2.5 py-1 text-xs bg-[#141619] border border-[#26292F] rounded text-[#EDEFF2] focus:border-[#5B7FFF] focus:outline-none"
+            className="px-2.5 py-1 text-xs bg-[#050505] border border-[#26292F] rounded text-[#EDEFF2] focus:border-[#7FFFD4] focus:outline-none"
             placeholder="Owner"
             required
           />
@@ -102,7 +102,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
             type="text"
             value={editDeadline}
             onChange={(e) => setEditDeadline(e.target.value)}
-            className="px-2.5 py-1 text-xs bg-[#141619] border border-[#26292F] rounded text-[#EDEFF2] focus:border-[#5B7FFF] focus:outline-none"
+            className="px-2.5 py-1 text-xs bg-[#050505] border border-[#26292F] rounded text-[#EDEFF2] focus:border-[#7FFFD4] focus:outline-none"
             placeholder="Deadline"
             required
           />
@@ -128,10 +128,10 @@ export const TaskCard: React.FC<TaskCardProps> = ({
     <div
       className={`p-3 rounded-lg border transition-all ${
         status === 'ignored'
-          ? 'opacity-50 border-[#26292F] bg-[#141619]'
+          ? 'opacity-50 border-[#26292F] bg-[#050505]'
           : status === 'confirmed'
           ? 'border-[#3ECF8E]/30 bg-[#3ECF8E]/5'
-          : 'border-[#26292F] bg-[#141619] hover:border-[#383C44]'
+          : 'border-[#26292F] bg-[#050505] hover:border-[#383C44]'
       }`}
     >
       <div className="flex items-start justify-between gap-2">
@@ -144,7 +144,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
       {/* Owner and Deadline metadata */}
       <div className="flex items-center gap-3 mt-2 text-[11px] text-[#A3AAB5]">
         <div className="flex items-center gap-1">
-          <User className="w-3 h-3 text-[#5B7FFF]" />
+          <User className="w-3 h-3 text-[#7FFFD4]" />
           <span>{owner}</span>
         </div>
         <span className="text-[#5F6773]">·</span>

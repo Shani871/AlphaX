@@ -51,7 +51,7 @@ export const TranscriptItem: React.FC<TranscriptItemProps> = ({
         <div className="flex items-center gap-2">
           <span
             className={`font-bold ${
-              isAI ? 'text-[#5B7FFF]' : 'text-[#EDEFF2]'
+              isAI ? 'text-[#7FFFD4]' : 'text-[#EDEFF2]'
             }`}
           >
             {speaker}

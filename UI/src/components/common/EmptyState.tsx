@@ -22,7 +22,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
 }) => {
   return (
     <div
-      className={`flex flex-col items-center justify-center text-center rounded-lg border border-dashed border-[#26292F] bg-[#141619]/40 ${
+      className={`flex flex-col items-center justify-center text-center rounded-lg border border-dashed border-[#26292F] bg-[#050505]/40 ${
         compact ? 'py-4 px-3' : 'py-6 px-4'
       }`}
     >

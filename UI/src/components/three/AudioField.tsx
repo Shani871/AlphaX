@@ -266,7 +266,7 @@ export const AudioField: React.FC<AudioFieldProps> = ({
         g = THREE.MathUtils.lerp(g, 0.81, greenWeight);
         b = THREE.MathUtils.lerp(b, 0.56, greenWeight);
       } else if (isSpeakingAI && isInner) {
-        // Shift toward primary blue (#5B7FFF)
+        // Shift toward primary blue (#7FFFD4)
         const blueWeight = Math.max(0, 1 - distFromCenter / (1.3 * scaleFactor)) * 0.75;
         r = THREE.MathUtils.lerp(r, 0.36, blueWeight);
         g = THREE.MathUtils.lerp(g, 0.5, blueWeight);

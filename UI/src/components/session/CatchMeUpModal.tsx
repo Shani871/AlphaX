@@ -111,13 +111,13 @@ export const CatchMeUpModal: React.FC<CatchMeUpModalProps> = ({
       }
     >
       {/* Audio Player Card Banner */}
-      <div className="p-3.5 rounded-lg bg-[#1C1F24] border border-[#5B7FFF]/30 flex items-center justify-between gap-3">
+      <div className="p-3.5 rounded-lg bg-[#0A0A0A] border border-[#7FFFD4]/30 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div
             className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
               isPlayingAudio
-                ? 'bg-[#5B7FFF] text-[#0B0C0E] animate-pulse ring-4 ring-[#5B7FFF]/20'
-                : 'bg-[#26292F] text-[#5B7FFF]'
+                ? 'bg-[#7FFFD4] text-[#000000] animate-pulse ring-4 ring-[#7FFFD4]/20'
+                : 'bg-[#26292F] text-[#7FFFD4]'
             }`}
           >
             <Volume2 className="w-4 h-4" />
@@ -128,7 +128,7 @@ export const CatchMeUpModal: React.FC<CatchMeUpModalProps> = ({
                 WOW Audio Host Briefing
               </span>
               {isPlayingAudio && (
-                <span className="text-[10px] font-bold text-[#5B7FFF] animate-pulse">
+                <span className="text-[10px] font-bold text-[#7FFFD4] animate-pulse">
                   Speaking...
                 </span>
               )}
@@ -150,8 +150,8 @@ export const CatchMeUpModal: React.FC<CatchMeUpModalProps> = ({
       </div>
 
       {/* Spoken Paragraph Text */}
-      <div className="p-3 rounded-lg bg-[#141619] border border-[#26292F] text-xs text-[#EDEFF2] leading-relaxed">
-        <span className="text-[10px] font-bold text-[#5B7FFF] uppercase tracking-wider block mb-1">
+      <div className="p-3 rounded-lg bg-[#050505] border border-[#26292F] text-xs text-[#EDEFF2] leading-relaxed">
+        <span className="text-[10px] font-bold text-[#7FFFD4] uppercase tracking-wider block mb-1">
           Executive Synthesis
         </span>
         {summaryParagraph}
@@ -168,7 +168,7 @@ export const CatchMeUpModal: React.FC<CatchMeUpModalProps> = ({
           {decisions.map((d) => (
             <div
               key={d.id}
-              className="p-2.5 rounded-md bg-[#1C1F24] border border-[#3ECF8E]/20 text-xs flex items-start gap-2 text-[#EDEFF2]"
+              className="p-2.5 rounded-md bg-[#0A0A0A] border border-[#3ECF8E]/20 text-xs flex items-start gap-2 text-[#EDEFF2]"
             >
               <span className="text-[#3ECF8E] font-bold mt-0.5">✓</span>
               <div className="flex-1">
@@ -181,7 +181,7 @@ export const CatchMeUpModal: React.FC<CatchMeUpModalProps> = ({
           {confirmedTasks.map((t) => (
             <div
               key={t.id}
-              className="p-2.5 rounded-md bg-[#1C1F24] border border-[#3ECF8E]/20 text-xs flex items-start gap-2 text-[#EDEFF2]"
+              className="p-2.5 rounded-md bg-[#0A0A0A] border border-[#3ECF8E]/20 text-xs flex items-start gap-2 text-[#EDEFF2]"
             >
               <span className="text-[#3ECF8E] font-bold mt-0.5">✓</span>
               <div className="flex-1">
@@ -210,7 +210,7 @@ export const CatchMeUpModal: React.FC<CatchMeUpModalProps> = ({
           {unresolvedQuestions.map((q) => (
             <div
               key={q.id}
-              className="p-2.5 rounded-md bg-[#1C1F24] border border-[#EF4B52]/20 text-xs flex items-start gap-2 text-[#EDEFF2]"
+              className="p-2.5 rounded-md bg-[#0A0A0A] border border-[#EF4B52]/20 text-xs flex items-start gap-2 text-[#EDEFF2]"
             >
               <span className="text-[#EF4B52] font-bold mt-0.5">!</span>
               <div className="flex-1">
@@ -223,7 +223,7 @@ export const CatchMeUpModal: React.FC<CatchMeUpModalProps> = ({
           {pendingTasks.map((t) => (
             <div
               key={t.id}
-              className="p-2.5 rounded-md bg-[#1C1F24] border border-[#E3A54A]/20 text-xs flex items-start gap-2 text-[#EDEFF2]"
+              className="p-2.5 rounded-md bg-[#0A0A0A] border border-[#E3A54A]/20 text-xs flex items-start gap-2 text-[#EDEFF2]"
             >
               <span className="text-[#E3A54A] font-bold mt-0.5">!</span>
               <div className="flex-1">

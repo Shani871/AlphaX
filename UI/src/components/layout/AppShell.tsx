@@ -32,28 +32,28 @@ export const AppShell: React.FC<AppShellProps> = ({
   onBackToPrevious,
 }) => {
   return (
-    <div className="flex flex-col h-screen w-screen overflow-hidden bg-[#0B0C0E] text-[#EDEFF2]">
+    <div className="flex flex-col h-screen w-screen overflow-hidden bg-[#000000] text-[#EDEFF2]">
       {/* Top Header (64px) */}
       {header}
 
       {/* Mobile Top Segmented Tab Switcher (< 768px) with mobile Back button per Section 14 */}
-      <div className="md:hidden flex items-center bg-[#141619] border-b border-[#26292F] px-2.5 py-1.5 shrink-0 z-20 gap-2">
+      <div className="md:hidden flex items-center bg-[#050505] border-b border-[#26292F] px-2.5 py-1.5 shrink-0 z-20 gap-2">
         {onBackToPrevious && (
           <button
             onClick={onBackToPrevious}
-            className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-semibold text-[#A3AAB5] hover:text-[#EDEFF2] hover:bg-[#1C1F24] shrink-0"
+            className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-semibold text-[#A3AAB5] hover:text-[#EDEFF2] hover:bg-[#0A0A0A] shrink-0"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Back</span>
           </button>
         )}
 
-        <div className="flex-1 flex items-center bg-[#0B0C0E] rounded-lg p-0.5 border border-[#26292F]">
+        <div className="flex-1 flex items-center bg-[#000000] rounded-lg p-0.5 border border-[#26292F]">
           <button
             onClick={() => onMobileTabChange('conversation')}
             className={`flex-1 py-1.5 text-xs font-semibold rounded transition-colors cursor-pointer ${
               mobileActiveTab === 'conversation'
-                ? 'bg-[#1C1F24] text-[#EDEFF2]'
+                ? 'bg-[#0A0A0A] text-[#EDEFF2]'
                 : 'text-[#5F6773] hover:text-[#A3AAB5]'
             }`}
           >
@@ -63,7 +63,7 @@ export const AppShell: React.FC<AppShellProps> = ({
             onClick={() => onMobileTabChange('intelligence')}
             className={`flex-1 py-1.5 text-xs font-semibold rounded transition-colors cursor-pointer ${
               mobileActiveTab === 'intelligence'
-                ? 'bg-[#1C1F24] text-[#5B7FFF]'
+                ? 'bg-[#0A0A0A] text-[#7FFFD4]'
                 : 'text-[#5F6773] hover:text-[#A3AAB5]'
             }`}
           >
@@ -73,7 +73,7 @@ export const AppShell: React.FC<AppShellProps> = ({
             onClick={() => onMobileTabChange('participants')}
             className={`flex-1 py-1.5 text-xs font-semibold rounded transition-colors cursor-pointer ${
               mobileActiveTab === 'participants'
-                ? 'bg-[#1C1F24] text-[#3ECF8E]'
+                ? 'bg-[#0A0A0A] text-[#3ECF8E]'
                 : 'text-[#5F6773] hover:text-[#A3AAB5]'
             }`}
           >
@@ -87,10 +87,10 @@ export const AppShell: React.FC<AppShellProps> = ({
         {/* LEFT SIDEBAR: Participants (18–20% on desktop) */}
         <aside
           className={`
-            lg:w-[19%] md:w-[22%] lg:flex lg:static border-r border-[#26292F]/60 bg-[#0B0C0E] p-6 lg:p-7 flex-col overflow-y-auto shrink-0
+            lg:w-[19%] md:w-[22%] lg:flex lg:static border-r border-[#26292F]/60 bg-[#000000] p-6 lg:p-7 flex-col overflow-y-auto shrink-0
             ${
               isTabletDrawerOpen
-                ? 'fixed inset-y-0 left-0 w-72 bg-[#0B0C0E] border-r border-[#26292F] p-6 flex flex-col z-50 shadow-2xl overflow-y-auto'
+                ? 'fixed inset-y-0 left-0 w-72 bg-[#000000] border-r border-[#26292F] p-6 flex flex-col z-50 shadow-2xl overflow-y-auto'
                 : 'hidden md:flex'
             }
             ${
@@ -119,13 +119,13 @@ export const AppShell: React.FC<AppShellProps> = ({
         {isTabletDrawerOpen && (
           <div
             onClick={onCloseTabletDrawer}
-            className="fixed inset-0 bg-[#0B0C0E]/80 backdrop-blur-sm z-40 lg:hidden"
+            className="fixed inset-0 bg-[#000000]/80 backdrop-blur-sm z-40 lg:hidden"
           />
         )}
 
         {/* CENTER: Main Conversational Environment (50–55% on desktop, dominant) */}
         <section
-          className={`flex-1 md:w-[53%] flex flex-col min-w-0 md:border-r border-[#26292F]/60 bg-[#0B0C0E] px-6 lg:px-10 py-6 overflow-hidden ${
+          className={`flex-1 md:w-[53%] flex flex-col min-w-0 md:border-r border-[#26292F]/60 bg-[#000000] px-6 lg:px-10 py-6 overflow-hidden ${
             mobileActiveTab !== 'conversation' ? 'hidden md:flex' : 'flex'
           }`}
         >
@@ -134,7 +134,7 @@ export const AppShell: React.FC<AppShellProps> = ({
 
         {/* RIGHT SIDEBAR: Intelligence Rail (27–30% on desktop) */}
         <aside
-          className={`w-full md:w-[28%] lg:w-[28%] bg-[#0B0C0E] p-6 lg:p-7 flex flex-col overflow-y-auto shrink-0 ${
+          className={`w-full md:w-[28%] lg:w-[28%] bg-[#000000] p-6 lg:p-7 flex flex-col overflow-y-auto shrink-0 ${
             mobileActiveTab !== 'intelligence' ? 'hidden md:flex' : 'flex'
           }`}
         >

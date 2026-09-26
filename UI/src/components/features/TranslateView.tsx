@@ -114,13 +114,13 @@ export const TranslateView: React.FC<TranslateViewProps> = ({ onBackToHome }) =>
   };
 
   return (
-    <div className="flex flex-col h-full w-full bg-[#0B0C0E] text-[#EDEFF2] select-none">
+    <div className="flex flex-col h-full w-full bg-[#000000] text-[#EDEFF2] select-none">
       {/* Top Header with Back button */}
       <div className="h-14 border-b border-[#26292F] px-4 sm:px-6 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">
           <button
             onClick={handleBackRequest}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-[#A3AAB5] hover:text-[#EDEFF2] hover:bg-[#1C1F24] transition-all cursor-pointer"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-[#A3AAB5] hover:text-[#EDEFF2] hover:bg-[#0A0A0A] transition-all cursor-pointer"
             title={step === 'session' ? 'Back to Language Selection' : 'Back to AuraLife AI Home'}
           >
             <ArrowLeft className="w-3.5 h-3.5" />
@@ -165,7 +165,7 @@ export const TranslateView: React.FC<TranslateViewProps> = ({ onBackToHome }) =>
               <button
                 key={item.code}
                 onClick={() => handleSelectLanguage(item.code as any)}
-                className="p-4 rounded-xl bg-[#141619] hover:bg-[#1C1F24] border border-[#26292F] hover:border-[#E3A54A]/40 text-left transition-all cursor-pointer group"
+                className="p-4 rounded-xl bg-[#050505] hover:bg-[#0A0A0A] border border-[#26292F] hover:border-[#E3A54A]/40 text-left transition-all cursor-pointer group"
               >
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xl">{item.flag}</span>
@@ -184,7 +184,7 @@ export const TranslateView: React.FC<TranslateViewProps> = ({ onBackToHome }) =>
         /* Step 2: Translation Session UI (Section 15) */
         <div className="flex-1 flex flex-col items-center justify-between p-6 max-w-xl mx-auto w-full">
           {/* Active target language pill */}
-          <div className="w-full flex items-center justify-between p-3 rounded-xl bg-[#141619] border border-[#26292F] shrink-0">
+          <div className="w-full flex items-center justify-between p-3 rounded-xl bg-[#050505] border border-[#26292F] shrink-0">
             <div className="flex items-center gap-2">
               <Languages className="w-4 h-4 text-[#E3A54A]" />
               <span className="text-xs font-semibold text-[#A3AAB5]">Translating into:</span>
@@ -193,7 +193,7 @@ export const TranslateView: React.FC<TranslateViewProps> = ({ onBackToHome }) =>
 
             <button
               onClick={() => setStep('language_selection')}
-              className="text-xs text-[#A3AAB5] hover:text-[#EDEFF2] px-2 py-1 rounded bg-[#1C1F24] hover:bg-[#26292F] transition-colors cursor-pointer"
+              className="text-xs text-[#A3AAB5] hover:text-[#EDEFF2] px-2 py-1 rounded bg-[#0A0A0A] hover:bg-[#26292F] transition-colors cursor-pointer"
             >
               Change Language
             </button>
@@ -202,7 +202,7 @@ export const TranslateView: React.FC<TranslateViewProps> = ({ onBackToHome }) =>
           {/* Translation Card: Original -> Translated */}
           <div className="w-full my-6 flex-1 flex flex-col justify-center space-y-5">
             {/* Original Speech Box */}
-            <div className="p-4 rounded-xl bg-[#141619] border border-[#26292F]">
+            <div className="p-4 rounded-xl bg-[#050505] border border-[#26292F]">
               <div className="text-[10px] font-bold text-[#5F6773] uppercase tracking-wider mb-1.5 flex items-center justify-between">
                 <span>Original Spoken Audio</span>
                 <span className="text-[#3ECF8E] font-normal">Source Detected</span>
@@ -214,13 +214,13 @@ export const TranslateView: React.FC<TranslateViewProps> = ({ onBackToHome }) =>
 
             {/* Direction Indicator */}
             <div className="flex items-center justify-center">
-              <div className="w-8 h-8 rounded-full bg-[#1C1F24] border border-[#26292F] flex items-center justify-center text-[#E3A54A]">
+              <div className="w-8 h-8 rounded-full bg-[#0A0A0A] border border-[#26292F] flex items-center justify-center text-[#E3A54A]">
                 ↓
               </div>
             </div>
 
             {/* Translated Result Box */}
-            <div className="p-4 rounded-xl bg-[#1C1F24] border border-[#E3A54A]/30 shadow-[0_0_20px_rgba(227,165,74,0.06)]">
+            <div className="p-4 rounded-xl bg-[#0A0A0A] border border-[#E3A54A]/30 shadow-[0_0_20px_rgba(227,165,74,0.06)]">
               <div className="text-[10px] font-bold text-[#E3A54A] uppercase tracking-wider mb-1.5 flex items-center justify-between">
                 <span>Translated to {targetLanguage}</span>
                 <button
@@ -244,8 +244,8 @@ export const TranslateView: React.FC<TranslateViewProps> = ({ onBackToHome }) =>
                 onClick={() => setIsRecording((p) => !p)}
                 className={`w-14 h-14 rounded-full flex items-center justify-center transition-all shadow-lg cursor-pointer ${
                   isRecording
-                    ? 'bg-[#E3A54A] text-[#0B0C0E] ring-4 ring-[#E3A54A]/25 scale-105 animate-pulse'
-                    : 'bg-[#1C1F24] hover:bg-[#26292F] text-[#E3A54A] border border-[#26292F]'
+                    ? 'bg-[#E3A54A] text-[#000000] ring-4 ring-[#E3A54A]/25 scale-105 animate-pulse'
+                    : 'bg-[#0A0A0A] hover:bg-[#26292F] text-[#E3A54A] border border-[#26292F]'
                 }`}
                 title={isRecording ? 'Listening for speech...' : 'Press to speak translation'}
               >
@@ -253,7 +253,7 @@ export const TranslateView: React.FC<TranslateViewProps> = ({ onBackToHome }) =>
               </button>
             </div>
 
-            <form onSubmit={handleCustomTranslate} className="flex items-center gap-2 bg-[#141619] border border-[#26292F] rounded-xl px-3 py-1.5">
+            <form onSubmit={handleCustomTranslate} className="flex items-center gap-2 bg-[#050505] border border-[#26292F] rounded-xl px-3 py-1.5">
               <input
                 type="text"
                 value={manualInput}
@@ -264,7 +264,7 @@ export const TranslateView: React.FC<TranslateViewProps> = ({ onBackToHome }) =>
               <button
                 type="submit"
                 disabled={!manualInput.trim()}
-                className="px-3 py-1 rounded-lg bg-[#E3A54A] disabled:opacity-30 text-[#0B0C0E] text-xs font-bold transition-all cursor-pointer"
+                className="px-3 py-1 rounded-lg bg-[#E3A54A] disabled:opacity-30 text-[#000000] text-xs font-bold transition-all cursor-pointer"
               >
                 Translate
               </button>
