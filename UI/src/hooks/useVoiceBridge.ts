@@ -191,6 +191,8 @@ function initWebSocket() {
     ws.onopen = () => {
       console.log(`[VoiceBridge] Connected to backend gateway at: ${wsUrl}`);
       updateState({ isConnected: true });
+      // Auto-start microphone and speech recognition on connect
+      startBrowserMic();
     };
 
     ws.onclose = () => {
